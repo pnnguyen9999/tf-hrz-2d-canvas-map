@@ -2,7 +2,7 @@ import { Coord, Layer } from "../lib/common";
 import { Viewport } from "../lib/viewport";
 
 export type Props = {
-  /** layer to render on the map */
+  /** layer to render on the map*/
   layers: Layer[];
   /** custom class name */
   className: string;

@@ -18,16 +18,18 @@ export class TileMap extends React.PureComponent<Props, State> {
     className: "",
     initialX: 0,
     initialY: 0,
-    size: 14,
-    width: 640,
-    height: 480,
-    zoom: 1,
+    size: 1,
+    //map width & height, khong lien quan den dien tich dat
+    width: 10,
+    height: 10,
+    zoom: 20,
     minSize: 7,
-    maxSize: 40,
-    minX: -150,
-    maxX: 150,
-    minY: -150,
-    maxY: 150,
+    maxSize: 20,
+    // limit offset interacting
+    minX: -550,
+    maxX: 550,
+    minY: -550,
+    maxY: 550,
     panX: 0,
     panY: 0,
     padding: 4,
@@ -36,7 +38,7 @@ export class TileMap extends React.PureComponent<Props, State> {
   };
 
   private oldState: State;
-  private canvas: HTMLCanvasElement | null;
+  public canvas: HTMLCanvasElement | null;
   private mounted: boolean;
   private hover: Coord | null;
   private popupTimeout: number | null;
@@ -68,6 +70,8 @@ export class TileMap extends React.PureComponent<Props, State> {
     this.canvas = null;
     this.popupTimeout = null;
   }
+
+  exportCanvas() {}
 
   UNSAFE_componentWillUpdate(nextProps: Props, nextState: State) {
     const { x, y } = this.props;
