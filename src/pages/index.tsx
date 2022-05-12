@@ -136,23 +136,32 @@ const Home: React.FC = () => {
       const startPointY = yMin;
       for (let i = 0; i < xMax - xMin + 1; i++) {
         for (let j = 0; j < yMax - yMin + 1; j++) {
-          /**
-           * @changeAxis -> x > 0, y > 0
-           */
-          // return (
-          //   startPointX + i <= x &&
-          //   x <= hover.x &&
-          //   startPointY + j <= y &&
-          //   y <= hover.y
-          // );
-          /**
-           * @changeAxis -> x > 0, y < 0
-           */
           return (
-            startPointX + i <= x &&
-            x <= hover.x &&
-            yMax + j >= y &&
-            y >= hover.y
+            /**
+             * @rotateAroundAxis -> x > 0, y > 0
+             */
+            (startPointX + i <= x &&
+              x <= hover.x &&
+              startPointY + j <= y &&
+              y <= hover.y) ||
+            /**
+             * @rotateAroundAxis -> x > 0, y < 0
+             */
+            (startPointX + i <= x &&
+              x <= hover.x &&
+              yMax + j >= y &&
+              y >= hover.y) ||
+            /**
+             * @rotateAroundAxis -> x < 0, y > 0
+             */
+            (xMax + i >= x &&
+              x >= hover.x &&
+              startPointY + j <= y &&
+              y <= hover.y) ||
+            /**
+             * @rotateAroundAxis -> x < 0, y < 0
+             */
+            (xMax + i >= x && x >= hover.x && yMax + j >= y && y >= hover.y)
           );
         }
       }
@@ -172,7 +181,7 @@ const Home: React.FC = () => {
   const hoverStrokeLayer: Layer = (x, y) => {
     if (isHighlighted(x, y)) {
       return {
-        color: "#ff1100",
+        color: "#8A8DD4",
         scale: 1,
       };
     }
@@ -228,8 +237,8 @@ const Home: React.FC = () => {
      */
     if (isSelectedGroup(x, y)) {
       return {
-        color: "#951400",
-        scale: 0.9,
+        color: "#212356",
+        scale: 1,
       };
     }
     /**
@@ -240,7 +249,7 @@ const Home: React.FC = () => {
       (lastPos?.x === x && lastPos?.y === y)
     ) {
       return {
-        color: "#ff2200",
+        color: "#8A8DD4",
         scale: 1,
       };
     }
