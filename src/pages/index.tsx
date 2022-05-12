@@ -26,7 +26,7 @@ export const COLOR_BY_TYPE = Object.freeze({
   10: "#3D3A46", // parcels on sale (we show them as owned parcels)
   11: "#09080A", // unowned pacel/estate
   12: "#CCCCCC", // background
-  13: "#9B9B9B", // loading odd
+  13: "#E3E3E3", // loading odd
   14: "#0d0b0e", // loading even
 });
 let hover;
@@ -120,59 +120,60 @@ const Home: React.FC = () => {
     }
   };
 
-  const chessboardLayer: Layer = (x, y) => {
-    return {
-      color: (x + y) % 2 === 0 ? "#00ff00" : "#ff0000",
-    };
-  };
-
-  const connectedLayer: Layer = (x, y) => {
-    const top = x % 5 === 0;
-    const left = y % 10 === 0;
-    return {
-      color: top || left ? "#888888" : "#000000",
-      top,
-      left,
-    };
-  };
-
   const handleHover = (x: number, y: number) => {
     hover = { x, y };
   };
 
   const isHighlighted = (x: number, y: number) => {
     if (!hover) return false;
-    // only highlight a 10x10 area centered around hover coords
-    const radius = 1;
-    return (
-      x > hover.x - radius &&
-      x < hover.x + radius &&
-      y > hover.y - radius &&
-      y < hover.y + radius
-    );
-  };
 
-  const isValid = () => {
-    if (!hover) return false;
-    // only valid if it fits in central plaza
-    return hover.x >= -50 && hover.x <= 50 && hover.y >= -50 && hover.y <= 50;
+    if (firstPos?.x && firstPos?.y && !(lastPos?.x && lastPos?.y)) {
+      let xMin = Math.min(firstPos?.x, hover.x);
+      let xMax = Math.max(firstPos?.x, hover.x);
+      let yMin = Math.min(firstPos?.y, hover.y);
+      let yMax = Math.max(firstPos?.y, hover.y);
+      const startPointX = xMin;
+      const startPointY = yMin;
+      for (let i = 0; i < xMax - xMin + 1; i++) {
+        for (let j = 0; j < yMax - yMin + 1; j++) {
+          /**
+           * @changeAxis -> x > 0, y > 0
+           */
+          // return (
+          //   startPointX + i <= x &&
+          //   x <= hover.x &&
+          //   startPointY + j <= y &&
+          //   y <= hover.y
+          // );
+          /**
+           * @changeAxis -> x > 0, y < 0
+           */
+          return (
+            startPointX + i <= x &&
+            x <= hover.x &&
+            yMax + j >= y &&
+            y >= hover.y
+          );
+        }
+      }
+    } else {
+      return hover.x === x && hover.y === y;
+    }
+    // only highlight a 10x10 area centered around hover coords
+    // const radius = 1;
+    // return (
+    //   x > hover.x - radius &&
+    //   x < hover.x + radius &&
+    //   y > hover.y - radius &&
+    //   y < hover.y + radius
+    // );
   };
 
   const hoverStrokeLayer: Layer = (x, y) => {
     if (isHighlighted(x, y)) {
       return {
-        color: "#99ff90",
+        color: "#ff1100",
         scale: 1,
-      };
-    }
-    return null;
-  };
-
-  const hoverFillLayer: Layer = (x, y) => {
-    if (isHighlighted(x, y)) {
-      return {
-        color: "#99ff90",
-        scale: 0.9,
       };
     }
     return null;
@@ -208,6 +209,7 @@ const Home: React.FC = () => {
     let yMax = Math.max(firstPos?.y, lastPos?.y);
     const startPointX = xMin;
     const startPointY = yMin;
+    console.log({ xMin, yMin });
     selected = [];
     for (let i = 0; i < xMax - xMin + 1; i++) {
       for (let j = 0; j < yMax - yMin + 1; j++) {
@@ -217,25 +219,28 @@ const Home: React.FC = () => {
     console.log(selected);
   }, [firstPos, lastPos]);
 
-  const isSelected = (x: number, y: number) =>
-    firstPos?.x === x && firstPos?.y === y;
-
   const isSelectedGroup = (x: number, y: number) =>
     selected.some((coord) => coord.x === x && coord.y === y);
 
-  const testLayer: Layer = (x, y) => {
+  const selectedLayer: Layer = (x, y) => {
+    /**
+     * draw a selected group
+     */
     if (isSelectedGroup(x, y)) {
       return {
-        color: "#00FF99",
-        scale: 0.8,
+        color: "#951400",
+        scale: 0.9,
       };
     }
+    /**
+     * draw 2 points firstPos & lastPos
+     */
     if (
       (firstPos?.x === x && firstPos?.y === y) ||
       (lastPos?.x === x && lastPos?.y === y)
     ) {
       return {
-        color: "#00ff00",
+        color: "#ff2200",
         scale: 1,
       };
     }
@@ -325,6 +330,16 @@ const Home: React.FC = () => {
     }
   };
 
+  const execute = () => {
+    for (let i = 0; i < selected.length; i++) {
+      const id = selected[i].x + "," + selected[i].y;
+      atlasMock[id] = {
+        x: selected[i].x,
+        y: selected[i].y,
+      };
+    }
+  };
+
   // const mouse = useMouse(TileMap, {
   //   enterDelay: 100,
   //   leaveDelay: 100,
@@ -344,7 +359,7 @@ const Home: React.FC = () => {
             <TileMap
               ref={refC}
               className="atlas"
-              layers={[atlasLayer, testLayer, hoverStrokeLayer]}
+              layers={[atlasLayer, selectedLayer, hoverStrokeLayer]}
               onClick={(x, y) => {
                 handleOnClick(x, y);
               }}
