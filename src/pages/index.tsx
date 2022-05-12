@@ -132,39 +132,24 @@ const Home: React.FC = () => {
       let xMax = Math.max(firstPos?.x, hover.x);
       let yMin = Math.min(firstPos?.y, hover.y);
       let yMax = Math.max(firstPos?.y, hover.y);
-      const startPointX = xMin;
-      const startPointY = yMin;
-      for (let i = 0; i < xMax - xMin + 1; i++) {
-        for (let j = 0; j < yMax - yMin + 1; j++) {
-          return (
-            /**
-             * @rotateAroundAxis -> x > 0, y > 0
-             */
-            (startPointX + i <= x &&
-              x <= hover.x &&
-              startPointY + j <= y &&
-              y <= hover.y) ||
-            /**
-             * @rotateAroundAxis -> x > 0, y < 0
-             */
-            (startPointX + i <= x &&
-              x <= hover.x &&
-              yMax + j >= y &&
-              y >= hover.y) ||
-            /**
-             * @rotateAroundAxis -> x < 0, y > 0
-             */
-            (xMax + i >= x &&
-              x >= hover.x &&
-              startPointY + j <= y &&
-              y <= hover.y) ||
-            /**
-             * @rotateAroundAxis -> x < 0, y < 0
-             */
-            (xMax + i >= x && x >= hover.x && yMax + j >= y && y >= hover.y)
-          );
-        }
-      }
+      return (
+        /**
+         * @rotateAroundAxis -> x > 0, y > 0
+         */
+        (xMin <= x && x <= hover.x && yMin <= y && y <= hover.y) ||
+        /**
+         * @rotateAroundAxis -> x > 0, y < 0
+         */
+        (xMin <= x && x <= hover.x && yMax >= y && y >= hover.y) ||
+        /**
+         * @rotateAroundAxis -> x < 0, y > 0
+         */
+        (xMax >= x && x >= hover.x && yMin <= y && y <= hover.y) ||
+        /**
+         * @rotateAroundAxis -> x < 0, y < 0
+         */
+        (xMax >= x && x >= hover.x && yMax >= y && y >= hover.y)
+      );
     } else {
       return hover.x === x && hover.y === y;
     }
@@ -362,9 +347,9 @@ const Home: React.FC = () => {
 
   return (
     <div className="">
-      <div className="col-12">
+      <div className="col-12 p-0">
         <div className="row">
-          <div className="col-11" style={{ height: 800 }}>
+          <div className="col-11" style={{ height: "100vh" }}>
             <TileMap
               ref={refC}
               className="atlas"
