@@ -163,10 +163,25 @@ const Home: React.FC = () => {
     // );
   };
 
+  const isValidSquare = () => {
+    if (!hover) return false;
+    if (firstPos?.x && firstPos?.y && !(lastPos?.x && lastPos?.y)) {
+      let xMin = Math.min(firstPos?.x, hover.x);
+      let xMax = Math.max(firstPos?.x, hover.x);
+      let yMin = Math.min(firstPos?.y, hover.y);
+      let yMax = Math.max(firstPos?.y, hover.y);
+      return (
+        Math.abs(xMax - xMin) < 5 &&
+        Math.abs(yMin - yMax) < 5 &&
+        Math.abs(xMax - xMin) === Math.abs(yMin - yMax)
+      );
+    }
+  };
+
   const hoverStrokeLayer: Layer = (x, y) => {
     if (isHighlighted(x, y)) {
       return {
-        color: "#8A8DD4",
+        color: isValidSquare() ? "#8A8DD4" : "#ff2200",
         scale: 1,
       };
     }
