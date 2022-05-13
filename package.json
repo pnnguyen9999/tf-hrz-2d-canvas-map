@@ -11,6 +11,8 @@
     "@types/node": "^12.20.10",
     "@types/react": "^17.0.4",
     "@types/react-dom": "^17.0.3",
+    "antd": "^4.20.4",
+    "axios": "^0.27.2",
     "bootstrap": "^4.5.3",
     "impetus": "^0.8.8",
     "mouse-position": "^2.1.0",

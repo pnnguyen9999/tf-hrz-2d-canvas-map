@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Coord, Layer, TileMap } from "../components";
 import useMouse from "mouse-position";
+import "antd/dist/antd.css";
+import { Space, Button } from "antd";
+import { Divider } from "antd";
 
 type AtlasTile = {
   x: number;
@@ -361,7 +364,7 @@ const Home: React.FC = () => {
     <div className="">
       <div className="col-12 p-0">
         <div className="row">
-          <div className="col-11" style={{ height: "100vh" }}>
+          <div className="col-10 p-0" style={{ height: "100vh" }}>
             <TileMap
               ref={refC}
               className="atlas"
@@ -385,34 +388,50 @@ const Home: React.FC = () => {
             />
           </div>
 
-          <div className="col-1">
-            <button onClick={() => setFreeRectangle(!isFreeRectangle)}>
-              {isFreeRectangle ? <>Reactagle</> : <>Square</>}
-            </button>
-            <button onClick={() => executeMergeAll()}>merge all</button>
-            <button onClick={() => executeMerge()}>merge</button>
-            <button onClick={() => executeConnectAll()}>connect all</button>
-            <button onClick={() => executeConnectTop()}>connect top</button>
-            <button onClick={() => executeConnectLeft()}>connect left</button>
-            <button onClick={() => executeConnectTopLeftOnly()}>
-              connect top left only
-            </button>
-            <button onClick={() => executeDisconnectAll()}>
-              disconnect all
-            </button>
-            <button onClick={() => executeReset()}>reset all</button>
-            <button onClick={() => setEnabledDrag(!isEnabledDrag)}>
-              {isEnabledDrag ? <>Disable Drag</> : <>Enable Drag</>}
-            </button>
-            <button onClick={() => setEnabledTop(!isEnabledTop)}>
-              {isEnabledTop ? <>Disable Top</> : <>Enable Top</>}
-            </button>
-            <button onClick={() => setEnabledLeft(!isEnabledLeft)}>
-              {isEnabledLeft ? <>Disable Left</> : <>Enable Left</>}
-            </button>
-            <button onClick={() => setEnabledTopLeft(!isEnabledTopLeft)}>
-              {isEnabledTopLeft ? <>Disable TopLeft</> : <>Enable TopLeft</>}
-            </button>
+          <div className="col-2">
+            <Divider orientation="left">Drag Mode</Divider>
+            <Space size={10} wrap>
+              <Button onClick={() => setFreeRectangle(!isFreeRectangle)}>
+                Current mode:&nbsp;{" "}
+                {isFreeRectangle ? <>Reactagle</> : <>Square</>}
+              </Button>
+            </Space>
+            <Divider orientation="left">Tool Box</Divider>
+            <Space size={10} wrap>
+              <Button onClick={() => executeMergeAll()}>
+                Merge all [&nbsp;]
+              </Button>
+              <Button onClick={() => executeMerge()}>Merge grid [+]</Button>
+              <Button onClick={() => executeConnectAll()}>Connect all</Button>
+              <Button onClick={() => executeConnectTop()}>Connect top</Button>
+              <Button onClick={() => executeConnectLeft()}>Connect left</Button>
+              <Button onClick={() => executeConnectTopLeftOnly()}>
+                Connect top left only
+              </Button>
+              <Button onClick={() => executeDisconnectAll()}>
+                Disconnect all
+              </Button>
+              <Button onClick={() => executeReset()}>Reset all</Button>
+            </Space>
+
+            <Divider orientation="left">Map Interaction</Divider>
+            <Space size={10} wrap>
+              <Button onClick={() => setEnabledDrag(!isEnabledDrag)}>
+                {isEnabledDrag ? <>Disable Drag</> : <>Enable Drag</>}
+              </Button>
+            </Space>
+            <Divider orientation="left">Visualize</Divider>
+            <Space size={10} wrap>
+              <Button onClick={() => setEnabledTop(!isEnabledTop)}>
+                {isEnabledTop ? <>Disable Top</> : <>Enable Top</>}
+              </Button>
+              <Button onClick={() => setEnabledLeft(!isEnabledLeft)}>
+                {isEnabledLeft ? <>Disable Left</> : <>Enable Left</>}
+              </Button>
+              <Button onClick={() => setEnabledTopLeft(!isEnabledTopLeft)}>
+                {isEnabledTopLeft ? <>Disable TopLeft</> : <>Enable TopLeft</>}
+              </Button>
+            </Space>
           </div>
         </div>
       </div>
