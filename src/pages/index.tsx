@@ -18,10 +18,22 @@ type AtlasTile = {
 };
 let atlas: Record<string, AtlasTile> | null = null;
 export const COLOR_BY_TYPE = Object.freeze({
-  "627de7ae5fe6b6b84a31b260": "#3E6587", // User
-  "627de7b45fe6b6b84a31b266": "#E8C82B", // Partner
-  "627de7ba5fe6b6b84a31b26c": "#4D2BE8", // Horizon
-  "627de7c25fe6b6b84a31b272": "#595B7C", // Sea
+  "627de7ae5fe6b6b84a31b260": {
+    color: "#3E6587",
+    name: "User",
+  }, // User
+  "627de7b45fe6b6b84a31b266": {
+    color: "#E8C82B",
+    name: "Partner",
+  }, // Partner
+  "627de7ba5fe6b6b84a31b26c": {
+    color: "#4D2BE8",
+    name: "Horizon Land",
+  }, // Horizon
+  "627de7c25fe6b6b84a31b272": {
+    color: "#595B7C",
+    name: "Sea",
+  }, // Sea
   4: "#ffbd33", // parcels/estates where I have permissions
   5: "#5054D4", // districts
   6: "#563db8", // contributions
@@ -83,7 +95,7 @@ const Home: React.FC = () => {
     const id = x + "," + y;
     if (atlasMock !== null && id in atlasMock) {
       const tile = atlasMock[id];
-      const color = COLOR_BY_TYPE[tile?.type];
+      const color = COLOR_BY_TYPE[tile?.type].color;
 
       const top = isEnabledTop && !!tile.top;
       const left = isEnabledLeft && !!tile.left;
@@ -176,15 +188,6 @@ const Home: React.FC = () => {
       };
     }
     return null;
-  };
-
-  const centerPointLayer: Layer = (x, y) => {
-    if (x === 0 && y === 0) {
-      return {
-        color: "#ff5500",
-        scale: 1,
-      };
-    }
   };
 
   const handleOnClick = (x, y) => {
@@ -395,6 +398,52 @@ const Home: React.FC = () => {
     }
   };
 
+  const setLandType = (type: string) => {
+    switch (type) {
+      case "user": {
+        for (let i = 0; i < selected.length; i++) {
+          const id = selected[i].x + "," + selected[i].y;
+          atlasMock[id] = {
+            ...atlasMock[id],
+            type: "627de7ae5fe6b6b84a31b260",
+          };
+        }
+        break;
+      }
+      case "partner": {
+        for (let i = 0; i < selected.length; i++) {
+          const id = selected[i].x + "," + selected[i].y;
+          atlasMock[id] = {
+            ...atlasMock[id],
+            type: "627de7b45fe6b6b84a31b266",
+          };
+        }
+        break;
+      }
+      case "horizon": {
+        for (let i = 0; i < selected.length; i++) {
+          const id = selected[i].x + "," + selected[i].y;
+          atlasMock[id] = {
+            ...atlasMock[id],
+            type: "627de7ba5fe6b6b84a31b26c",
+          };
+        }
+        break;
+      }
+      default:
+      case "sea": {
+        for (let i = 0; i < selected.length; i++) {
+          const id = selected[i].x + "," + selected[i].y;
+          atlasMock[id] = {
+            ...atlasMock[id],
+            type: "627de7c25fe6b6b84a31b272",
+          };
+        }
+        break;
+      }
+    }
+  };
+
   // const mouse = useMouse(TileMap, {
   //   enterDelay: 100,
   //   leaveDelay: 100,
@@ -496,6 +545,20 @@ const Home: React.FC = () => {
                 </div>
                 <div className="col-6">
                   <Divider orientation="left">Land Types</Divider>
+                  <Space size={10} wrap>
+                    <Button onClick={() => setLandType("user")}>
+                      Set to User's Land
+                    </Button>
+                    <Button onClick={() => setLandType("partner")}>
+                      Set to Partner's Land
+                    </Button>
+                    <Button onClick={() => setLandType("horizon")}>
+                      Set to Horizon's Land
+                    </Button>
+                    <Button onClick={() => setLandType("sea")}>
+                      Set to Sea's Land
+                    </Button>
+                  </Space>
                   <Divider orientation="left">Debug Mode</Divider>
                   <Space size={10}>
                     <Button
@@ -515,6 +578,15 @@ const Home: React.FC = () => {
                       {JSON.stringify(
                         atlasMock[`${currentParcel.x},${currentParcel.y}`]
                       )}
+                      <div>
+                        Land Type:&nbsp;
+                        {
+                          COLOR_BY_TYPE[
+                            atlasMock[`${currentParcel.x},${currentParcel.y}`]
+                              ?.type
+                          ]?.name
+                        }
+                      </div>
                     </div>
                   </div>
                 </div>
