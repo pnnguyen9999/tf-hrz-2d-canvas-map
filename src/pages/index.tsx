@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { Coord, Layer, TileMap } from "../components";
 import useMouse from "mouse-position";
 import "antd/dist/antd.css";
-import { Space, Button } from "antd";
+import { Space, Button, message } from "antd";
 import { Divider } from "antd";
 import TextArea from "antd/lib/input/TextArea";
+import axios from "axios";
 
 type AtlasTile = {
   x: number;
@@ -17,10 +18,10 @@ type AtlasTile = {
 };
 let atlas: Record<string, AtlasTile> | null = null;
 export const COLOR_BY_TYPE = Object.freeze({
-  0: "#ff9990", // my parcels
-  1: "#ff4053", // my parcels on sale
-  2: "#ff9990", // my estates
-  3: "#ff4053", // my estates on sale
+  "627de7ae5fe6b6b84a31b260": "#3E6587", // User
+  "627de7b45fe6b6b84a31b266": "#E8C82B", // Partner
+  "627de7ba5fe6b6b84a31b26c": "#4D2BE8", // Horizon
+  "627de7c25fe6b6b84a31b272": "#595B7C", // Sea
   4: "#ffbd33", // parcels/estates where I have permissions
   5: "#5054D4", // districts
   6: "#563db8", // contributions
@@ -51,21 +52,38 @@ const Home: React.FC = () => {
   const [isFreeRectangle, setFreeRectangle] = useState<boolean>(false);
 
   const [currentParcel, setCurrentParcel] = useState<any>({});
-  const [isEnableDebugMode, setEnableDebugMode] = useState<boolean>(false);
+  const [isEnableDebugMode, setEnableDebugMode] = useState<boolean>(true);
 
   async function loadTiles() {
-    const resp = await fetch("https://api.decentraland.org/v1/tiles");
+    const resp = await fetch("http://68.183.231.255:12000/api/lands");
     const json = await resp.json();
-    atlas = json.data as Record<string, AtlasTile>;
+    atlasMock = json.data as Record<string, AtlasTile>;
   }
 
-  loadTiles().catch(console.error);
+  useEffect(() => {
+    loadTiles().catch(console.error);
+  }, []);
+
+  async function saveTiles() {
+    let dataSend = {
+      data: atlasMock,
+    };
+    const res = await axios
+      .post(`http://68.183.231.255:12000/api/lands`, dataSend)
+      .then((res: any) => {
+        if (res.status === 200) {
+          message.success("save success");
+        } else {
+          message.warn("save failed");
+        }
+      });
+  }
 
   const atlasLayer: any = (x, y) => {
     const id = x + "," + y;
     if (atlasMock !== null && id in atlasMock) {
       const tile = atlasMock[id];
-      const color = COLOR_BY_TYPE[tile.type];
+      const color = COLOR_BY_TYPE[tile?.type];
 
       const top = isEnabledTop && !!tile.top;
       const left = isEnabledLeft && !!tile.left;
@@ -250,7 +268,15 @@ const Home: React.FC = () => {
     for (let i = 0; i < selected.length; i++) {
       const id = selected[i].x + "," + selected[i].y;
       // mock = { ...mock, "x,y": { location: selected[i] } };
-      atlasMock[id] = { type: 5, x: selected[i].x, y: selected[i].y };
+      atlasMock[id] = {
+        ...atlasMock[id],
+        type: "627de7c25fe6b6b84a31b272",
+        x: selected[i].x,
+        y: selected[i].y,
+        top: 0,
+        left: 0,
+        topLeft: 0,
+      };
     }
     console.log(atlasMock);
   };
@@ -259,7 +285,8 @@ const Home: React.FC = () => {
     for (let i = 0; i < selected.length; i++) {
       const id = selected[i].x + "," + selected[i].y;
       atlasMock[id] = {
-        type: 5,
+        ...atlasMock[id],
+        type: "627de7c25fe6b6b84a31b272",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -273,10 +300,13 @@ const Home: React.FC = () => {
     for (let i = 0; i < selected.length; i++) {
       const id = selected[i].x + "," + selected[i].y;
       atlasMock[id] = {
-        type: 5,
+        ...atlasMock[id],
+        type: "627de7c25fe6b6b84a31b272",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
+        left: 0,
+        topLeft: 0,
       };
     }
   };
@@ -285,10 +315,13 @@ const Home: React.FC = () => {
     for (let i = 0; i < selected.length; i++) {
       const id = selected[i].x + "," + selected[i].y;
       atlasMock[id] = {
-        type: 5,
+        ...atlasMock[id],
+        type: "627de7c25fe6b6b84a31b272",
         x: selected[i].x,
         y: selected[i].y,
         left: 1,
+        top: 0,
+        topLeft: 0,
       };
     }
   };
@@ -297,11 +330,13 @@ const Home: React.FC = () => {
     for (let i = 0; i < selected.length; i++) {
       const id = selected[i].x + "," + selected[i].y;
       atlasMock[id] = {
-        type: 5,
+        ...atlasMock[id],
+        type: "627de7c25fe6b6b84a31b272",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
         left: 1,
+        topLeft: 0,
       };
     }
   };
@@ -310,9 +345,13 @@ const Home: React.FC = () => {
     for (let i = 0; i < selected.length; i++) {
       const id = selected[i].x + "," + selected[i].y;
       atlasMock[id] = {
-        type: 5,
+        ...atlasMock[id],
+        type: "627de7c25fe6b6b84a31b272",
         x: selected[i].x,
         y: selected[i].y,
+        top: 0,
+        left: 0,
+        topLeft: 0,
       };
     }
   };
@@ -321,6 +360,7 @@ const Home: React.FC = () => {
     for (let i = 0; i < selected.length; i++) {
       const id = selected[i].x + "," + selected[i].y;
       atlasMock[id] = {
+        ...atlasMock[id]?._id,
         x: selected[i].x,
         y: selected[i].y,
       };
@@ -344,12 +384,13 @@ const Home: React.FC = () => {
         (e) => e.x == selected[i].x - 1 && e.y == selected[i].y + 1
       );
       atlasMock[id] = {
+        ...atlasMock[id],
         x: selected[i].x,
         y: selected[i].y,
         top: !!checkTop ? 1 : 0,
         left: !!checkLeft ? 1 : 0,
         topLeft: !!checkTopLeft ? 1 : 0,
-        type: 5,
+        type: "627de7c25fe6b6b84a31b272",
       };
     }
   };
@@ -369,7 +410,7 @@ const Home: React.FC = () => {
     <div className="">
       <div className="col-12 pl-0">
         <div className="row">
-          <div className="col-10 p-0" style={{ height: "100vh" }}>
+          <div className="col-8 p-0" style={{ height: "100vh" }}>
             <TileMap
               ref={refC}
               className="atlas"
@@ -388,60 +429,96 @@ const Home: React.FC = () => {
             />
           </div>
 
-          <div className="col-2">
-            <Divider orientation="left">Drag Mode</Divider>
-            <Space size={10} wrap>
-              <Button onClick={() => setFreeRectangle(!isFreeRectangle)}>
-                Current mode:&nbsp;{" "}
-                {isFreeRectangle ? <>Reactagle</> : <>Square</>}
-              </Button>
-            </Space>
-            <Divider orientation="left">Tool Box</Divider>
-            <Space size={10} wrap>
-              <Button onClick={() => executeMergeAll()}>
-                Merge all [&nbsp;]
-              </Button>
-              <Button onClick={() => executeMerge()}>Merge grid [+]</Button>
-              <Button onClick={() => executeConnectAll()}>Connect all</Button>
-              <Button onClick={() => executeConnectTop()}>Connect top</Button>
-              <Button onClick={() => executeConnectLeft()}>Connect left</Button>
-              <Button onClick={() => executeConnectTopLeftOnly()}>
-                Connect top left only
-              </Button>
-              <Button onClick={() => executeDisconnectAll()}>
-                Disconnect all
-              </Button>
-              <Button onClick={() => executeReset()}>Reset all</Button>
-            </Space>
-            <Divider orientation="left">Map Interaction</Divider>
-            <Space size={10} wrap>
-              <Button onClick={() => setEnabledDrag(!isEnabledDrag)}>
-                {isEnabledDrag ? <>Disable Drag</> : <>Enable Drag</>}
-              </Button>
-            </Space>
-            <Divider orientation="left">Visualize</Divider>
-            <Space size={10} wrap>
-              <Button onClick={() => setEnabledTop(!isEnabledTop)}>
-                {isEnabledTop ? <>Disable Top</> : <>Enable Top</>}
-              </Button>
-              <Button onClick={() => setEnabledLeft(!isEnabledLeft)}>
-                {isEnabledLeft ? <>Disable Left</> : <>Enable Left</>}
-              </Button>
-              <Button onClick={() => setEnabledTopLeft(!isEnabledTopLeft)}>
-                {isEnabledTopLeft ? <>Disable TopLeft</> : <>Enable TopLeft</>}
-              </Button>
-            </Space>
-            <Divider orientation="left">Debug Mode</Divider>
-            <Space size={10}>
-              <Button onClick={() => setEnableDebugMode(!isEnableDebugMode)}>
-                {isEnableDebugMode ? <>Disable Debug</> : <>Enable Debug</>}
-              </Button>
-            </Space>
-            {currentParcel.x} {currentParcel.y}
-            <div style={{ wordWrap: "break-word" }}>
-              {JSON.stringify(
-                atlasMock[`${currentParcel.x},${currentParcel.y}`]
-              )}
+          <div className="col-4">
+            <div className="col-12">
+              <div className="row">
+                <div className="col-6">
+                  <Divider orientation="left">Drag Mode</Divider>
+                  <Space size={10} wrap>
+                    <Button onClick={() => setFreeRectangle(!isFreeRectangle)}>
+                      Current mode:&nbsp;{" "}
+                      {isFreeRectangle ? <>Reactagle</> : <>Square</>}
+                    </Button>
+                  </Space>
+                  <Divider orientation="left">Tool Box</Divider>
+                  <Space size={10} wrap>
+                    <Button onClick={() => executeMergeAll()}>
+                      Merge all [&nbsp;]
+                    </Button>
+                    <Button onClick={() => executeMerge()}>
+                      Merge grid [+]
+                    </Button>
+                    <Button onClick={() => executeConnectAll()}>
+                      Connect all
+                    </Button>
+                    <Button onClick={() => executeConnectTop()}>
+                      Connect top
+                    </Button>
+                    <Button onClick={() => executeConnectLeft()}>
+                      Connect left
+                    </Button>
+                    <Button onClick={() => executeConnectTopLeftOnly()}>
+                      Connect top left only
+                    </Button>
+                    <Button onClick={() => executeDisconnectAll()}>
+                      Disconnect all
+                    </Button>
+                    <Button onClick={() => executeReset()}>Reset all</Button>
+                  </Space>
+                  <Divider orientation="left">Map Interaction</Divider>
+                  <Space size={10} wrap>
+                    <Button onClick={() => setEnabledDrag(!isEnabledDrag)}>
+                      {isEnabledDrag ? <>Disable Drag</> : <>Enable Drag</>}
+                    </Button>
+                  </Space>
+                  <Divider orientation="left">Visualize</Divider>
+                  <Space size={10} wrap>
+                    <Button onClick={() => setEnabledTop(!isEnabledTop)}>
+                      {isEnabledTop ? <>Disable Top</> : <>Enable Top</>}
+                    </Button>
+                    <Button onClick={() => setEnabledLeft(!isEnabledLeft)}>
+                      {isEnabledLeft ? <>Disable Left</> : <>Enable Left</>}
+                    </Button>
+                    <Button
+                      onClick={() => setEnabledTopLeft(!isEnabledTopLeft)}
+                    >
+                      {isEnabledTopLeft ? (
+                        <>Disable TopLeft</>
+                      ) : (
+                        <>Enable TopLeft</>
+                      )}
+                    </Button>
+                  </Space>
+                  <Divider orientation="left">Data Interaction</Divider>
+                  <Button type="primary" onClick={() => saveTiles()}>
+                    Save Map
+                  </Button>
+                </div>
+                <div className="col-6">
+                  <Divider orientation="left">Land Types</Divider>
+                  <Divider orientation="left">Debug Mode</Divider>
+                  <Space size={10}>
+                    <Button
+                      danger
+                      onClick={() => setEnableDebugMode(!isEnableDebugMode)}
+                    >
+                      {isEnableDebugMode ? (
+                        <>Disable Debug</>
+                      ) : (
+                        <>Enable Debug</>
+                      )}
+                    </Button>
+                  </Space>
+                  <div>
+                    [{currentParcel.x}, {currentParcel.y}]
+                    <div style={{ wordWrap: "break-word" }}>
+                      {JSON.stringify(
+                        atlasMock[`${currentParcel.x},${currentParcel.y}`]
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
