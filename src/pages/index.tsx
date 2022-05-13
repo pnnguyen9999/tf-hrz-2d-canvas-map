@@ -32,39 +32,39 @@ export const COLOR_BY_TYPE = Object.freeze({
 let hover;
 
 let atlasMock = {
-  "-1,2": {
-    type: 5,
-    x: -1,
-    y: 2,
-    owner: "0xa65be351527ebcf8c1707d1e444dac38b41a5faf",
-    estate_id: "1186",
-  },
-  "-1,1": {
-    type: 5,
-    x: -1,
-    y: 1,
-    top: 1,
-    owner: "0xa65be351527ebcf8c1707d1e444dac38b41a5faf",
-    estate_id: "1186",
-  },
-  "0,1": {
-    type: 5,
-    x: 0,
-    y: 1,
-    top: 1,
-    left: 1,
-    topLeft: 1,
-    owner: "0xa65be351527ebcf8c1707d1e444dac38b41a5faf",
-    estate_id: "1186",
-  },
-  "0,2": {
-    type: 5,
-    x: 0,
-    y: 2,
-    left: 1,
-    owner: "0xa65be351527ebcf8c1707d1e444dac38b41a5faf",
-    estate_id: "1186",
-  },
+  // "-1,2": {
+  //   type: 5,
+  //   x: -1,
+  //   y: 2,
+  //   owner: "0xa65be351527ebcf8c1707d1e444dac38b41a5faf",
+  //   estate_id: "1186",
+  // },
+  // "-1,1": {
+  //   type: 5,
+  //   x: -1,
+  //   y: 1,
+  //   top: 1,
+  //   owner: "0xa65be351527ebcf8c1707d1e444dac38b41a5faf",
+  //   estate_id: "1186",
+  // },
+  // "0,1": {
+  //   type: 5,
+  //   x: 0,
+  //   y: 1,
+  //   top: 1,
+  //   left: 1,
+  //   topLeft: 1,
+  //   owner: "0xa65be351527ebcf8c1707d1e444dac38b41a5faf",
+  //   estate_id: "1186",
+  // },
+  // "0,2": {
+  //   type: 5,
+  //   x: 0,
+  //   y: 2,
+  //   left: 1,
+  //   owner: "0xa65be351527ebcf8c1707d1e444dac38b41a5faf",
+  //   estate_id: "1186",
+  // },
 };
 let timeFlag = 0;
 // let firstPos = null;
@@ -171,6 +171,15 @@ const Home: React.FC = () => {
       };
     }
     return null;
+  };
+
+  const centerPointLayer: Layer = (x, y) => {
+    if (x === 0 && y === 0) {
+      return {
+        color: "#ff5500",
+        scale: 1,
+      };
+    }
   };
 
   const handleOnClick = (x, y) => {
@@ -324,14 +333,33 @@ const Home: React.FC = () => {
     }
   };
 
-  const execute = () => {
+  const executeMergeAll = () => {
+    console.log(selected);
+    let checkTop;
+    let checkLeft;
+    let checkTopLeft;
     for (let i = 0; i < selected.length; i++) {
       const id = selected[i].x + "," + selected[i].y;
+      checkTop = selected.find(
+        (e) => e.x == selected[i].x && e.y == selected[i].y + 1
+      );
+      checkLeft = selected.find(
+        (e) => e.x == selected[i].x - 1 && e.y == selected[i].y
+      );
+      checkTopLeft = selected.find(
+        (e) => e.x == selected[i].x - 1 && e.y == selected[i].y + 1
+      );
       atlasMock[id] = {
+        test: { checkTop, checkLeft, checkTopLeft },
         x: selected[i].x,
         y: selected[i].y,
+        top: !!checkTop ? 1 : 0,
+        left: !!checkLeft ? 1 : 0,
+        topLeft: !!checkTopLeft ? 1 : 0,
+        type: 5,
       };
     }
+    console.log(atlasMock);
   };
 
   // const mouse = useMouse(TileMap, {
@@ -353,7 +381,12 @@ const Home: React.FC = () => {
             <TileMap
               ref={refC}
               className="atlas"
-              layers={[atlasLayer, selectedLayer, hoverStrokeLayer]}
+              layers={[
+                atlasLayer,
+                selectedLayer,
+                hoverStrokeLayer,
+                centerPointLayer,
+              ]}
               onClick={(x, y) => {
                 handleOnClick(x, y);
               }}
@@ -369,6 +402,7 @@ const Home: React.FC = () => {
           </div>
 
           <div className="col-1">
+            <button onClick={() => executeMergeAll()}>merge all</button>
             <button onClick={() => executeMerge()}>merge</button>
             <button onClick={() => executeConnectAll()}>connect all</button>
             <button onClick={() => executeConnectTop()}>connect top</button>

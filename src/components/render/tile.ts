@@ -16,6 +16,8 @@ export function renderTile(args: {
 
   ctx.fillStyle = color;
 
+  // ctx.fillText(`${x}, ${y}`, x, y);
+
   const tileSize = scale ? size * scale : size;
 
   if (!top && !left) {
