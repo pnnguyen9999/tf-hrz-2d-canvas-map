@@ -31,52 +31,8 @@ export const COLOR_BY_TYPE = Object.freeze({
 });
 let hover;
 
-let atlasMock = {
-  // "-1,2": {
-  //   type: 5,
-  //   x: -1,
-  //   y: 2,
-  //   owner: "0xa65be351527ebcf8c1707d1e444dac38b41a5faf",
-  //   estate_id: "1186",
-  // },
-  // "-1,1": {
-  //   type: 5,
-  //   x: -1,
-  //   y: 1,
-  //   top: 1,
-  //   owner: "0xa65be351527ebcf8c1707d1e444dac38b41a5faf",
-  //   estate_id: "1186",
-  // },
-  // "0,1": {
-  //   type: 5,
-  //   x: 0,
-  //   y: 1,
-  //   top: 1,
-  //   left: 1,
-  //   topLeft: 1,
-  //   owner: "0xa65be351527ebcf8c1707d1e444dac38b41a5faf",
-  //   estate_id: "1186",
-  // },
-  // "0,2": {
-  //   type: 5,
-  //   x: 0,
-  //   y: 2,
-  //   left: 1,
-  //   owner: "0xa65be351527ebcf8c1707d1e444dac38b41a5faf",
-  //   estate_id: "1186",
-  // },
-};
-let timeFlag = 0;
-// let firstPos = null;
-// let lastPos = null;
+let atlasMock = {};
 let selected: Coord[] = [];
-
-type pos =
-  | {
-      x: number;
-      y: number;
-    }
-  | any;
 
 const Home: React.FC = () => {
   const refC = useRef<any>();
@@ -87,6 +43,8 @@ const Home: React.FC = () => {
 
   const [firstPos, setFirstPos] = useState<any>({});
   const [lastPos, setLastPos] = useState<any>({});
+
+  const [isFreeRectangle, setFreeRectangle] = useState<boolean>(false);
 
   async function loadTiles() {
     const resp = await fetch("https://api.decentraland.org/v1/tiles");
@@ -165,16 +123,20 @@ const Home: React.FC = () => {
 
   const isValidSquare = () => {
     if (!hover) return false;
-    if (firstPos?.x && firstPos?.y && !(lastPos?.x && lastPos?.y)) {
-      let xMin = Math.min(firstPos?.x, hover.x);
-      let xMax = Math.max(firstPos?.x, hover.x);
-      let yMin = Math.min(firstPos?.y, hover.y);
-      let yMax = Math.max(firstPos?.y, hover.y);
-      return (
-        Math.abs(xMax - xMin) < 5 &&
-        Math.abs(yMin - yMax) < 5 &&
-        Math.abs(xMax - xMin) === Math.abs(yMin - yMax)
-      );
+    if (!isFreeRectangle) {
+      if (firstPos?.x && firstPos?.y && !(lastPos?.x && lastPos?.y)) {
+        let xMin = Math.min(firstPos?.x, hover.x);
+        let xMax = Math.max(firstPos?.x, hover.x);
+        let yMin = Math.min(firstPos?.y, hover.y);
+        let yMax = Math.max(firstPos?.y, hover.y);
+        return (
+          Math.abs(xMax - xMin) < 5 &&
+          Math.abs(yMin - yMax) < 5 &&
+          Math.abs(xMax - xMin) === Math.abs(yMin - yMax)
+        );
+      }
+    } else {
+      return true;
     }
   };
 
@@ -206,10 +168,15 @@ const Home: React.FC = () => {
       setLastPos(null);
     } else {
       if (firstPos?.x && firstPos?.y) {
-        setLastPos({
-          x,
-          y,
-        });
+        if (isValidSquare()) {
+          setLastPos({
+            x,
+            y,
+          });
+        } else {
+          setFirstPos(null);
+          setLastPos(null);
+        }
       } else {
         setFirstPos({
           x,
@@ -234,6 +201,8 @@ const Home: React.FC = () => {
         selected.push({ x: startPointX + i, y: startPointY + j });
       }
     }
+    // setFirstPos(null);
+    // setLastPos(null);
     console.log(selected);
   }, [firstPos, lastPos]);
 
@@ -417,6 +386,9 @@ const Home: React.FC = () => {
           </div>
 
           <div className="col-1">
+            <button onClick={() => setFreeRectangle(!isFreeRectangle)}>
+              {isFreeRectangle ? <>Reactagle</> : <>Square</>}
+            </button>
             <button onClick={() => executeMergeAll()}>merge all</button>
             <button onClick={() => executeMerge()}>merge</button>
             <button onClick={() => executeConnectAll()}>connect all</button>
