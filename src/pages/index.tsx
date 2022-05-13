@@ -4,6 +4,7 @@ import useMouse from "mouse-position";
 import "antd/dist/antd.css";
 import { Space, Button } from "antd";
 import { Divider } from "antd";
+import TextArea from "antd/lib/input/TextArea";
 
 type AtlasTile = {
   x: number;
@@ -49,6 +50,9 @@ const Home: React.FC = () => {
 
   const [isFreeRectangle, setFreeRectangle] = useState<boolean>(false);
 
+  const [currentParcel, setCurrentParcel] = useState<any>({});
+  const [isEnableDebugMode, setEnableDebugMode] = useState<boolean>(false);
+
   async function loadTiles() {
     const resp = await fetch("https://api.decentraland.org/v1/tiles");
     const json = await resp.json();
@@ -83,6 +87,9 @@ const Home: React.FC = () => {
 
   const handleHover = (x: number, y: number) => {
     hover = { x, y };
+    if (isEnableDebugMode) {
+      setCurrentParcel({ x, y });
+    }
   };
 
   const isHighlighted = (x: number, y: number) => {
@@ -337,7 +344,6 @@ const Home: React.FC = () => {
         (e) => e.x == selected[i].x - 1 && e.y == selected[i].y + 1
       );
       atlasMock[id] = {
-        test: { checkTop, checkLeft, checkTopLeft },
         x: selected[i].x,
         y: selected[i].y,
         top: !!checkTop ? 1 : 0,
@@ -346,7 +352,6 @@ const Home: React.FC = () => {
         type: 5,
       };
     }
-    console.log(atlasMock);
   };
 
   // const mouse = useMouse(TileMap, {
@@ -362,18 +367,13 @@ const Home: React.FC = () => {
 
   return (
     <div className="">
-      <div className="col-12 p-0">
+      <div className="col-12 pl-0">
         <div className="row">
           <div className="col-10 p-0" style={{ height: "100vh" }}>
             <TileMap
               ref={refC}
               className="atlas"
-              layers={[
-                atlasLayer,
-                selectedLayer,
-                hoverStrokeLayer,
-                centerPointLayer,
-              ]}
+              layers={[atlasLayer, selectedLayer, hoverStrokeLayer]}
               onClick={(x, y) => {
                 handleOnClick(x, y);
               }}
@@ -413,7 +413,6 @@ const Home: React.FC = () => {
               </Button>
               <Button onClick={() => executeReset()}>Reset all</Button>
             </Space>
-
             <Divider orientation="left">Map Interaction</Divider>
             <Space size={10} wrap>
               <Button onClick={() => setEnabledDrag(!isEnabledDrag)}>
@@ -432,6 +431,18 @@ const Home: React.FC = () => {
                 {isEnabledTopLeft ? <>Disable TopLeft</> : <>Enable TopLeft</>}
               </Button>
             </Space>
+            <Divider orientation="left">Debug Mode</Divider>
+            <Space size={10}>
+              <Button onClick={() => setEnableDebugMode(!isEnableDebugMode)}>
+                {isEnableDebugMode ? <>Disable Debug</> : <>Enable Debug</>}
+              </Button>
+            </Space>
+            {currentParcel.x} {currentParcel.y}
+            <div style={{ wordWrap: "break-word" }}>
+              {JSON.stringify(
+                atlasMock[`${currentParcel.x},${currentParcel.y}`]
+              )}
+            </div>
           </div>
         </div>
       </div>
