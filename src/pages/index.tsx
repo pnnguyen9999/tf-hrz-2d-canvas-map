@@ -61,7 +61,7 @@ const Home: React.FC = () => {
   const [firstPos, setFirstPos] = useState<any>({});
   const [lastPos, setLastPos] = useState<any>({});
 
-  const [isFreeRectangle, setFreeRectangle] = useState<boolean>(false);
+  const [isFreeRectangle, setFreeRectangle] = useState<boolean>(true);
 
   const [currentParcel, setCurrentParcel] = useState<any>({});
   const [isEnableDebugMode, setEnableDebugMode] = useState<boolean>(true);
@@ -85,6 +85,7 @@ const Home: React.FC = () => {
       .then((res: any) => {
         if (res.status === 200) {
           message.success("save success");
+          loadTiles().catch(console.error);
         } else {
           message.warn("save failed");
         }
