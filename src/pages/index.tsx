@@ -27,7 +27,7 @@ export const COLOR_BY_TYPE = Object.freeze({
     name: "Partner",
   }, // Partner
   "627de7ba5fe6b6b84a31b26c": {
-    color: "#4D2BE8",
+    color: "#1A54A4",
     name: "Horizon Land",
   }, // Horizon
   "627de7c25fe6b6b84a31b272": {
@@ -58,6 +58,7 @@ const Home: React.FC = () => {
   const [isEnabledLeft, setEnabledLeft] = useState<boolean>(true);
   const [isEnabledTopLeft, setEnabledTopLeft] = useState<boolean>(true);
 
+  // first & last position of selected group
   const [firstPos, setFirstPos] = useState<any>({});
   const [lastPos, setLastPos] = useState<any>({});
 
@@ -111,7 +112,12 @@ const Home: React.FC = () => {
     } else {
       return {
         // tra ve chessboardLayer
-        color: (x + y) % 2 === 0 ? COLOR_BY_TYPE[12] : COLOR_BY_TYPE[13],
+        color:
+          x === 0 || y === 0
+            ? COLOR_BY_TYPE[10]
+            : (x + y) % 2 === 0
+            ? COLOR_BY_TYPE[12]
+            : COLOR_BY_TYPE[13],
       };
     }
   };
@@ -126,7 +132,11 @@ const Home: React.FC = () => {
   const isHighlighted = (x: number, y: number) => {
     if (!hover) return false;
 
-    if (firstPos?.x && firstPos?.y && !(lastPos?.x && lastPos?.y)) {
+    if (
+      typeof firstPos?.x !== "undefined" &&
+      typeof firstPos?.y !== "undefined" &&
+      !(typeof lastPos?.x !== "undefined" && typeof lastPos?.y !== "undefined")
+    ) {
       let xMin = Math.min(firstPos?.x, hover.x);
       let xMax = Math.max(firstPos?.x, hover.x);
       let yMin = Math.min(firstPos?.y, hover.y);
@@ -165,7 +175,13 @@ const Home: React.FC = () => {
   const isValidSquare = () => {
     if (!hover) return false;
     if (!isFreeRectangle) {
-      if (firstPos?.x && firstPos?.y && !(lastPos?.x && lastPos?.y)) {
+      if (
+        typeof firstPos?.x !== "undefined" &&
+        typeof firstPos?.y !== "undefined" &&
+        !(
+          typeof lastPos?.x !== "undefined" && typeof lastPos?.y !== "undefined"
+        )
+      ) {
         let xMin = Math.min(firstPos?.x, hover.x);
         let xMax = Math.max(firstPos?.x, hover.x);
         let yMin = Math.min(firstPos?.y, hover.y);
@@ -195,11 +211,19 @@ const Home: React.FC = () => {
     console.log({ x, y });
     // const id = x + "," + y;
     // console.log(atlasMock[id]);
-    if (firstPos?.x && firstPos?.y && lastPos?.x && lastPos?.y) {
+    if (
+      typeof firstPos?.x !== "undefined" &&
+      typeof firstPos?.y !== "undefined" &&
+      typeof lastPos?.x !== "undefined" &&
+      typeof lastPos?.y !== "undefined"
+    ) {
       setFirstPos(null);
       setLastPos(null);
     } else {
-      if (firstPos?.x && firstPos?.y) {
+      if (
+        typeof firstPos?.x !== "undefined" &&
+        typeof firstPos?.y !== "undefined"
+      ) {
         if (isValidSquare()) {
           setLastPos({
             x,
