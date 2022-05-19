@@ -18,19 +18,19 @@ type AtlasTile = {
 };
 let atlas: Record<string, AtlasTile> | null = null;
 export const COLOR_BY_TYPE = Object.freeze({
-  "627de7ae5fe6b6b84a31b260": {
+  "6285c404f1340f47efb55f47": {
     color: "#3E6587",
     name: "User",
   }, // User
-  "627de7b45fe6b6b84a31b266": {
+  "6285c408f1340f47efb55f61": {
     color: "#E8C82B",
     name: "Partner",
   }, // Partner
-  "627de7ba5fe6b6b84a31b26c": {
+  "6285c400f1340f47efb55f31": {
     color: "#1A54A4",
     name: "Horizon Land",
   }, // Horizon
-  "627de7c25fe6b6b84a31b272": {
+  "6285c3fbf1340f47efb55f1f": {
     color: "#595B7C",
     name: "Sea",
   }, // Sea
@@ -298,7 +298,7 @@ const Home: React.FC = () => {
       // mock = { ...mock, "x,y": { location: selected[i] } };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "627de7c25fe6b6b84a31b272",
+        type: "6285c3fbf1340f47efb55f1f",
         x: selected[i].x,
         y: selected[i].y,
         top: 0,
@@ -314,7 +314,7 @@ const Home: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "627de7c25fe6b6b84a31b272",
+        type: "6285c3fbf1340f47efb55f1f",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -329,7 +329,7 @@ const Home: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "627de7c25fe6b6b84a31b272",
+        type: "6285c3fbf1340f47efb55f1f",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -344,7 +344,7 @@ const Home: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "627de7c25fe6b6b84a31b272",
+        type: "6285c3fbf1340f47efb55f1f",
         x: selected[i].x,
         y: selected[i].y,
         left: 1,
@@ -359,7 +359,7 @@ const Home: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "627de7c25fe6b6b84a31b272",
+        type: "6285c3fbf1340f47efb55f1f",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -374,7 +374,7 @@ const Home: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "627de7c25fe6b6b84a31b272",
+        type: "6285c3fbf1340f47efb55f1f",
         x: selected[i].x,
         y: selected[i].y,
         top: 0,
@@ -418,7 +418,7 @@ const Home: React.FC = () => {
         top: !!checkTop ? 1 : 0,
         left: !!checkLeft ? 1 : 0,
         topLeft: !!checkTopLeft ? 1 : 0,
-        type: "627de7c25fe6b6b84a31b272",
+        type: "6285c3fbf1340f47efb55f1f",
       };
     }
   };
@@ -430,7 +430,7 @@ const Home: React.FC = () => {
           const id = selected[i].x + "," + selected[i].y;
           atlasMock[id] = {
             ...atlasMock[id],
-            type: "627de7ae5fe6b6b84a31b260",
+            type: "6285c404f1340f47efb55f47",
           };
         }
         break;
@@ -440,7 +440,7 @@ const Home: React.FC = () => {
           const id = selected[i].x + "," + selected[i].y;
           atlasMock[id] = {
             ...atlasMock[id],
-            type: "627de7b45fe6b6b84a31b266",
+            type: "6285c408f1340f47efb55f61",
           };
         }
         break;
@@ -450,7 +450,7 @@ const Home: React.FC = () => {
           const id = selected[i].x + "," + selected[i].y;
           atlasMock[id] = {
             ...atlasMock[id],
-            type: "627de7ba5fe6b6b84a31b26c",
+            type: "6285c400f1340f47efb55f31",
           };
         }
         break;
@@ -461,7 +461,7 @@ const Home: React.FC = () => {
           const id = selected[i].x + "," + selected[i].y;
           atlasMock[id] = {
             ...atlasMock[id],
-            type: "627de7c25fe6b6b84a31b272",
+            type: "6285c3fbf1340f47efb55f1f",
           };
         }
         break;
