@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers, getUserByid } from "redux/slices/user";
-import { Button, Table, Drawer, DrawerProps, Checkbox } from "antd";
+import {
+  Button,
+  Table,
+  Drawer,
+  DrawerProps,
+  Checkbox,
+  Space,
+  Input,
+  Select,
+} from "antd";
 import { API_ENDPOINT } from "constant/api";
 import axiosService from "services/axiosService";
 
@@ -10,13 +19,19 @@ type Props = {};
 export default function EditUser({}: Props) {
   const dispatch = useDispatch();
   const dataUsers = useSelector((state) => state.user.dataUsers);
-  const dataUserById = useSelector((state) => state.user.dataUserById);
+  const [dataUserById, setDataUserById] = useState<any>();
+
+  //   const dataUserById = useSelector((state) => state.user.dataUserById);
 
   const [isOpenDrawer, setOpenDrawer] = useState(false);
   const [placement, setPlacement] = useState<DrawerProps["placement"]>("right");
 
-  // gởi cái này để update permissions user
+  // gởi cái này để update data user
   const [newPermissions, setNewPermissions] = useState<any>();
+  const [newRole, setNewRole] = useState<string>();
+  const [isActiveAccount, setIsActiveAccount] = useState<boolean>();
+  const [canMerge, setCanMerge] = useState<boolean>();
+
   useEffect(() => {
     dispatch(getAllUsers());
   }, []);
@@ -102,15 +117,18 @@ export default function EditUser({}: Props) {
     // dispatch(getUserByid(id));
     await axiosService.get(`${API_ENDPOINT}/users/${id}`, {}).then((res) => {
       let clonePermissions = [...res.data.data.permissions];
+      setDataUserById(res.data.data);
+      // init data
       setNewPermissions(clonePermissions);
+
+      setIsActiveAccount(res.data.data.isActive);
+      setNewRole(res.data.data.role);
+      setCanMerge(res.data.data.canMerge);
     });
     setOpenDrawer(true);
   };
 
   const handleCheckBox = (id: string) => {
-    console.log(id);
-    console.log(newPermissions);
-    console.log(newPermissions.findIndex((x: any) => x._id === id));
     const index = newPermissions.findIndex((x: any) => x._id === id);
     let changePms = [...newPermissions];
     changePms[index] = {
@@ -120,6 +138,26 @@ export default function EditUser({}: Props) {
     setNewPermissions(changePms);
   };
 
+  const handleChangeRole = (value: string) => {
+    setNewRole(value);
+  };
+
+  const handleSave = async (id: string) => {
+    const obj = {
+      role: newRole,
+      isActive: isActiveAccount,
+      canMerge: canMerge,
+      permissions: newPermissions,
+    };
+    console.log(obj);
+    await axiosService
+      .put(`${API_ENDPOINT}/users/${id}/update`, obj)
+      .then((res) => {
+        console.log(res);
+      });
+  };
+
+  const { Option } = Select;
   return (
     <div className="edit-user">
       <Table columns={columns} dataSource={dataUsers} pagination={false} />
@@ -131,7 +169,35 @@ export default function EditUser({}: Props) {
         visible={isOpenDrawer}
         size="large"
       >
-        <p>{dataUserById?.id}</p>
+        <div className="mb-4">
+          <div className="mb-3">
+            <Button onClick={() => handleSave(dataUserById?.id)}>Save</Button>
+          </div>
+          <Space size={10} wrap>
+            <Input placeholder="Name" value={dataUserById?.username} />
+            <Input placeholder="Email" value={dataUserById?.email} />
+            <Select
+              value={newRole}
+              style={{ width: 120 }}
+              onChange={(e) => handleChangeRole(e)}
+            >
+              <Option value="Super admin">Super admin</Option>
+              <Option value="Painter">Painter</Option>
+            </Select>
+            <Checkbox
+              onChange={(e) => setIsActiveAccount(e.target.checked)}
+              checked={isActiveAccount}
+            >
+              is Active
+            </Checkbox>
+            <Checkbox
+              onChange={(e) => setCanMerge(e.target.checked)}
+              checked={canMerge}
+            >
+              can Merge
+            </Checkbox>
+          </Space>
+        </div>
         <Table
           columns={columnsPermissions}
           dataSource={newPermissions}
