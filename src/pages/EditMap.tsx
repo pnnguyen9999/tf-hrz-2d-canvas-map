@@ -487,7 +487,7 @@ const EditMap: React.FC = () => {
   // }, [mouse]);
 
   return (
-    <div className="">
+    <div className="edit-map">
       <div className="col-12 pl-0">
         <div className="row">
           <div className="col-8 p-0" style={{ height: "100vh" }}>
