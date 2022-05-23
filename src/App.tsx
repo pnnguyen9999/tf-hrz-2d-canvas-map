@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { routesGlobal } from "routes";
 // import Home from "pages";
 import Layout from "pages";
+import "antd/dist/antd.css";
 
 const showLayout = (routes) => {
   if (routes && routes.length > 0) {

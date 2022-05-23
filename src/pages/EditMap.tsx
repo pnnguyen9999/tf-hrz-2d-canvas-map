@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Coord, Layer, TileMap } from "../components";
 import useMouse from "mouse-position";
-import "antd/dist/antd.css";
 import { Space, Button, message } from "antd";
 import { Divider } from "antd";
 import TextArea from "antd/lib/input/TextArea";
