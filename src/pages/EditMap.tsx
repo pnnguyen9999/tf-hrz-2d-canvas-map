@@ -582,8 +582,8 @@ const EditMap: React.FC = () => {
                       Set to Sea's Land
                     </Button>
                   </Space>
-                  <Divider orientation="left">Debug Mode</Divider>
-                  <Space size={10}>
+                  <Divider orientation="left">Parcel Info</Divider>
+                  {/* <Space size={10}>
                     <Button
                       danger
                       onClick={() => setEnableDebugMode(!isEnableDebugMode)}
@@ -594,7 +594,7 @@ const EditMap: React.FC = () => {
                         <>Enable Debug</>
                       )}
                     </Button>
-                  </Space>
+                  </Space> */}
                   <div>
                     [{currentParcel.x}, {currentParcel.y}]
                     <div style={{ wordWrap: "break-word" }}>

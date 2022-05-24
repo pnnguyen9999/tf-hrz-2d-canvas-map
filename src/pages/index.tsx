@@ -4,7 +4,8 @@ import { NavLink } from "react-router-dom";
 import { API_ENDPOINT } from "constant/api";
 import axiosService from "services/axiosService";
 import Login from "./Login";
-import { Space } from "antd";
+import { Button, Space } from "antd";
+import Cookies from "js-cookie";
 
 export default function Layout(props): ReactElement {
   const [userCheckOkay, setCheckOkay] = useState(true);
@@ -26,6 +27,11 @@ export default function Layout(props): ReactElement {
     }
     a();
   }, [userCheckOkay]);
+
+  const handleLogout = () => {
+    Cookies.remove("token", { path: "/" });
+    window.location.reload();
+  };
   return (
     <div>
       {userCheckOkay ? (
@@ -61,7 +67,11 @@ export default function Layout(props): ReactElement {
               </div>
             </div>
             <div className="col-10">
-              <div className="horizon-nav p-3">Horizon map admin</div>
+              <div className="horizon-nav p-3 d-flex justify-content-end">
+                <Button onClick={() => handleLogout()} danger type="primary">
+                  Logout
+                </Button>
+              </div>
               <div>{props.children}</div>
             </div>
           </div>
