@@ -1,8 +1,9 @@
 import React from "react";
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button } from "antd";
 import axios from "axios";
 import { API_ENDPOINT } from "constant/api";
 import { setUserCookie } from "services/axiosService";
+import { toast } from "react-toastify";
 type Props = {};
 
 export default function Login({}: Props) {
@@ -17,14 +18,11 @@ export default function Login({}: Props) {
   const onFinish = async (values: any) => {
     try {
       await login(values.email, values.password).then((res) => {
-        console.log(res.data);
         setUserCookie(res.data.data);
         window.location.assign("/edit-map");
       });
-      console.log("Success:", values);
     } catch (e) {
-      console.log(e);
-      message.error("Wrong login info");
+      toast.error("Wrong login info");
     }
   };
 

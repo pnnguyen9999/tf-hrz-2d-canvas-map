@@ -15,6 +15,8 @@ import {
 } from "antd";
 import { API_ENDPOINT } from "constant/api";
 import axiosService from "services/axiosService";
+import { toast } from "react-toastify";
+import { COLOR_BY_TYPE } from "./EditMap";
 
 type Props = {};
 
@@ -84,7 +86,11 @@ export default function EditUser({}: Props) {
       dataIndex: "constraint",
       render: (constraint: any) => {
         return (
-          <div>
+          <div
+            style={{
+              backgroundColor: COLOR_BY_TYPE[constraint.type._id].color,
+            }}
+          >
             {constraint.area.name}, {constraint.type.name}
           </div>
         );
@@ -121,6 +127,7 @@ export default function EditUser({}: Props) {
     // dispatch(getUserByid(id));
     await axiosService.get(`${API_ENDPOINT}/users/${id}`, {}).then((res) => {
       let clonePermissions = [...res.data.data.permissions];
+      console.log(res.data.data);
       setDataUserById(res.data.data);
       // init data
       setNewPermissions(clonePermissions);
@@ -158,6 +165,7 @@ export default function EditUser({}: Props) {
       .put(`${API_ENDPOINT}/users/${id}/update`, obj)
       .then((res) => {
         console.log(res);
+        toast.info(res.data.message);
         dispatch(getAllUsers());
       });
   };
@@ -175,6 +183,7 @@ export default function EditUser({}: Props) {
       .post(`${API_ENDPOINT}/auth/register`, obj)
       .then((res) => {
         console.log(res);
+        toast.info(res.data.message);
         dispatch(getAllUsers());
         setOpenRegisterModal(false);
       });

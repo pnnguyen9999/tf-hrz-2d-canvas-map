@@ -4,7 +4,6 @@ import axiosService from "services/axiosService";
 
 export const getAllUsers = createAsyncThunk("getAllUsers", async () => {
   const res = await axiosService.get(`${API_ENDPOINT}/users`, {});
-  console.log(res.data);
   return res.data.data;
 });
 
@@ -12,7 +11,6 @@ export const getUserByid = createAsyncThunk(
   "getUserByid",
   async (id: string) => {
     const res = await axiosService.get(`${API_ENDPOINT}/users/${id}`, {});
-    console.log(res.data);
     return res.data.data;
   }
 );
@@ -22,12 +20,17 @@ const initialState = {
   dataUsersLoading: false,
   dataUserById: {} as any,
   dataUserByIdLoading: false,
+  dataUserProfile: {} as any,
 };
 
 const user = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    setUserProfile: (state, { payload }) => {
+      state.dataUserProfile = payload;
+    },
+  },
   extraReducers: (builder) => {
     /**
      * @getAllUsers
@@ -58,6 +61,6 @@ const user = createSlice({
   },
 });
 
-export const {} = user.actions;
+export const { setUserProfile } = user.actions;
 
 export default user.reducer;

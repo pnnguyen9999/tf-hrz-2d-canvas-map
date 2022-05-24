@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Coord, Layer, TileMap } from "../components";
 import useMouse from "mouse-position";
-import { Space, Button, message } from "antd";
+import { Space, Button } from "antd";
 import { Divider } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import axios from "axios";
 import axiosService from "services/axiosService";
+import { toast } from "react-toastify";
 import _ from "lodash";
 
 type AtlasTile = {
@@ -24,7 +25,7 @@ export const COLOR_BY_TYPE = Object.freeze({
     name: "User",
   }, // User
   "62875eaf7aad92b518bfec88": {
-    color: "#E8C82B",
+    color: "#D2B522",
     name: "Partner",
   }, // Partner
   "62875eeb7aad92b518bfec9e": {
@@ -98,10 +99,11 @@ const EditMap: React.FC = () => {
       .post(`http://68.183.231.255:12000/api/lands`, dataSend)
       .then((res: any) => {
         if (res.status === 200) {
-          message.success("save success");
+          // message.info(res.data.message);
+          toast.info(res.data.message);
           loadTiles().catch(console.error);
         } else {
-          message.warn("save failed");
+          toast.error("save failed");
         }
       });
   }
@@ -110,7 +112,7 @@ const EditMap: React.FC = () => {
     const id = x + "," + y;
     if (atlasMock !== null && id in atlasMock) {
       const tile = atlasMock[id];
-      const color = COLOR_BY_TYPE[tile?.type].color;
+      const color = COLOR_BY_TYPE[tile?.type]?.color;
 
       const top = isEnabledTop && !!tile.top;
       const left = isEnabledLeft && !!tile.left;
@@ -125,6 +127,7 @@ const EditMap: React.FC = () => {
     } else {
       return {
         // tra ve chessboardLayer
+        scale: 1,
         color:
           x === 0 || y === 0
             ? COLOR_BY_TYPE[10]
