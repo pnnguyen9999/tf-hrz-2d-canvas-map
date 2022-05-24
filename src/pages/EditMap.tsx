@@ -70,11 +70,7 @@ const EditMap: React.FC = () => {
   const [isEnableDebugMode, setEnableDebugMode] = useState<boolean>(true);
 
   async function loadTiles() {
-    // const resp = await fetch("http://68.183.231.255:12000/api/lands");
-    // const json = await resp.json();
-    // atlasMock = json.data as Record<string, AtlasTile>;
-
-    const res = await axios
+    await axios
       .get("http://68.183.231.255:12000/api/lands")
       .then((res: any) => {
         atlasMock = res.data.data as Record<string, AtlasTile>;
@@ -87,14 +83,6 @@ const EditMap: React.FC = () => {
     loadTiles().catch(console.error);
   }, []);
 
-  function getDifference(array1, array2) {
-    return array1.filter((object1) => {
-      return !array2.some((object2) => {
-        return object1 === object2;
-      });
-    });
-  }
-
   async function saveTiles() {
     let atlasData = Object.entries(atlasMock);
     let stockData = Object.entries(atlasStock);
@@ -106,7 +94,7 @@ const EditMap: React.FC = () => {
     let dataSend = {
       data: atlasSend,
     };
-    const res = await axiosService
+    await axiosService
       .post(`http://68.183.231.255:12000/api/lands`, dataSend)
       .then((res: any) => {
         if (res.status === 200) {
@@ -187,14 +175,6 @@ const EditMap: React.FC = () => {
     } else {
       return hover.x === x && hover.y === y;
     }
-    // only highlight a 10x10 area centered around hover coords
-    // const radius = 1;
-    // return (
-    //   x > hover.x - radius &&
-    //   x < hover.x + radius &&
-    //   y > hover.y - radius &&
-    //   y < hover.y + radius
-    // );
   };
 
   const isValidSquare = () => {
@@ -234,8 +214,6 @@ const EditMap: React.FC = () => {
 
   const handleOnClick = (x, y) => {
     console.log({ x, y });
-    // const id = x + "," + y;
-    // console.log(atlasMock[id]);
     if (
       typeof firstPos?.x !== "undefined" &&
       typeof firstPos?.y !== "undefined" &&
@@ -282,8 +260,6 @@ const EditMap: React.FC = () => {
         selected.push({ x: startPointX + i, y: startPointY + j });
       }
     }
-    // setFirstPos(null);
-    // setLastPos(null);
     console.log(selected);
   }, [firstPos, lastPos]);
 
@@ -316,14 +292,11 @@ const EditMap: React.FC = () => {
   };
 
   const executeMerge = () => {
-    // let mock = {};
-    // console.log(selected);
     for (let i = 0; i < selected.length; i++) {
       const id = selected[i].x + "," + selected[i].y;
-      // mock = { ...mock, "x,y": { location: selected[i] } };
       atlasMock[id] = {
         ...atlasMock[id],
-        // type: "62875efc7aad92b518bfecb8",
+        type: "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: 0,

@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-
+import { NavLink } from "react-router-dom";
 import { API_ENDPOINT } from "constant/api";
 import axiosService from "services/axiosService";
 import Login from "./Login";
@@ -39,14 +39,24 @@ export default function Layout(props): ReactElement {
                   alt="logo-hrz"
                 />
               </div>
-              <div className="">
-                <Space size={10} direction="vertical">
-                  <div className="menu-item">
-                    <a href="/edit-map">Map</a>
-                  </div>
-                  <div className="menu-item">
-                    <a href="/edit-user">User Admin</a>
-                  </div>
+              <div className="w-100">
+                <Space size={10} direction="vertical" className="w-100">
+                  <NavLink
+                    to="/edit-map"
+                    className={({ isActive }) =>
+                      isActive ? "menu-item active" : "menu-item"
+                    }
+                  >
+                    Edit Map
+                  </NavLink>
+                  <NavLink
+                    to="/edit-user"
+                    className={({ isActive }) =>
+                      isActive ? "menu-item active" : "menu-item"
+                    }
+                  >
+                    User Admin
+                  </NavLink>
                 </Space>
               </div>
             </div>

@@ -176,6 +176,7 @@ export default function EditUser({}: Props) {
       .then((res) => {
         console.log(res);
         dispatch(getAllUsers());
+        setOpenRegisterModal(false);
       });
     console.log(values);
     createUserForm.resetFields();
