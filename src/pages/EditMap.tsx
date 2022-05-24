@@ -323,7 +323,7 @@ const EditMap: React.FC = () => {
       // mock = { ...mock, "x,y": { location: selected[i] } };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "62875efc7aad92b518bfecb8",
+        // type: "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: 0,

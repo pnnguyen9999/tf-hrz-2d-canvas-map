@@ -19,6 +19,7 @@ import axiosService from "services/axiosService";
 type Props = {};
 
 export default function EditUser({}: Props) {
+  const [createUserForm] = Form.useForm();
   const dispatch = useDispatch();
   const dataUsers = useSelector((state) => state.user.dataUsers);
   const [dataUserById, setDataUserById] = useState<any>();
@@ -157,13 +158,27 @@ export default function EditUser({}: Props) {
       .put(`${API_ENDPOINT}/users/${id}/update`, obj)
       .then((res) => {
         console.log(res);
+        dispatch(getAllUsers());
       });
   };
 
   const { Option } = Select;
 
   const onSubmiteRegister = async (values: any) => {
+    const obj = {
+      username: values.username,
+      password: values.password,
+      email: values.email,
+      role: values.role,
+    };
+    await axiosService
+      .post(`${API_ENDPOINT}/auth/register`, obj)
+      .then((res) => {
+        console.log(res);
+        dispatch(getAllUsers());
+      });
     console.log(values);
+    createUserForm.resetFields();
   };
   return (
     <div className="edit-user">
@@ -193,7 +208,7 @@ export default function EditUser({}: Props) {
               style={{ width: 120 }}
               onChange={(e) => handleChangeRole(e)}
             >
-              <Option value="Super admin">Super admin</Option>
+              <Option value="Administrator">Administrator</Option>
               <Option value="Painter">Painter</Option>
             </Select>
             <Checkbox
@@ -223,6 +238,7 @@ export default function EditUser({}: Props) {
         onCancel={() => {
           setOpenRegisterModal(false);
         }}
+        footer={false}
       >
         <Form
           name="basic"
@@ -231,6 +247,7 @@ export default function EditUser({}: Props) {
           initialValues={{ remember: true }}
           onFinish={onSubmiteRegister}
           autoComplete="off"
+          form={createUserForm}
         >
           <Form.Item
             label="Username"
@@ -251,26 +268,30 @@ export default function EditUser({}: Props) {
           <Form.Item
             label="Email"
             name="email"
-            rules={[{ required: true, message: "Please input email!" }]}
+            rules={[
+              { required: true, message: "Please input email!" },
+              {
+                type: "email",
+                message: "The input is not valid E-mail!",
+              },
+            ]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item
             label="Role"
-            name="username"
-            rules={[{ required: true, message: "Please input username!" }]}
+            name="role"
+            rules={[{ required: true, message: "Please select category!" }]}
           >
-            {/* <Select
-                      className="mr-2"
-                      placeholder="select category"
-                    >
-                      {selectBoxCategory?.map((obj: any, index: number) => (
-                        <Option value={obj.name} key={`category-${index}`}>
-                          {obj.name}
-                        </Option>
-                      ))}
-                    </Select> */}
+            <Select className="mr-2" placeholder="select category">
+              <Option value="Administrator" key="Administrator">
+                Administrator
+              </Option>
+              <Option value="Painter" key="Painter">
+                Painter
+              </Option>
+            </Select>
           </Form.Item>
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
