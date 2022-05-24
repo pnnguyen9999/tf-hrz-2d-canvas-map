@@ -8,6 +8,7 @@ import axios from "axios";
 import axiosService from "services/axiosService";
 import { toast } from "react-toastify";
 import _ from "lodash";
+import { API_ENDPOINT } from "constant/api";
 
 type AtlasTile = {
   x: number;
@@ -71,13 +72,11 @@ const EditMap: React.FC = () => {
   const [isEnableDebugMode, setEnableDebugMode] = useState<boolean>(true);
 
   async function loadTiles() {
-    await axios
-      .get("http://68.183.231.255:12000/api/lands")
-      .then((res: any) => {
-        atlasMock = res.data.data as Record<string, AtlasTile>;
-        atlasStock = { ...res.data.data } as Record<string, AtlasTile>;
-        // console.log(atlasMock);
-      });
+    await axios.get(`${API_ENDPOINT}/lands`).then((res: any) => {
+      atlasMock = res.data.data as Record<string, AtlasTile>;
+      atlasStock = { ...res.data.data } as Record<string, AtlasTile>;
+      // console.log(atlasMock);
+    });
   }
 
   useEffect(() => {
@@ -96,7 +95,7 @@ const EditMap: React.FC = () => {
       data: atlasSend,
     };
     await axiosService
-      .post(`http://68.183.231.255:12000/api/lands`, dataSend)
+      .post(`${API_ENDPOINT}/lands`, dataSend)
       .then((res: any) => {
         if (res.status === 200) {
           // message.info(res.data.message);
