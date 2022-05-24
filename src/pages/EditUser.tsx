@@ -10,6 +10,8 @@ import {
   Space,
   Input,
   Select,
+  Modal,
+  Form,
 } from "antd";
 import { API_ENDPOINT } from "constant/api";
 import axiosService from "services/axiosService";
@@ -23,7 +25,8 @@ export default function EditUser({}: Props) {
 
   //   const dataUserById = useSelector((state) => state.user.dataUserById);
 
-  const [isOpenDrawer, setOpenDrawer] = useState(false);
+  const [isOpenDrawer, setOpenDrawer] = useState<boolean>(false);
+  const [isOpenRegisterModal, setOpenRegisterModal] = useState<boolean>(false);
   const [placement, setPlacement] = useState<DrawerProps["placement"]>("right");
 
   // gởi cái này để update data user
@@ -158,8 +161,17 @@ export default function EditUser({}: Props) {
   };
 
   const { Option } = Select;
+
+  const onSubmiteRegister = async (values: any) => {
+    console.log(values);
+  };
   return (
     <div className="edit-user">
+      <div className="mb-3">
+        <Button onClick={() => setOpenRegisterModal(true)}>
+          Create New User
+        </Button>
+      </div>
       <Table columns={columns} dataSource={dataUsers} pagination={false} />
       <Drawer
         title={`Edit user id ${dataUserById?.id}`}
@@ -204,6 +216,70 @@ export default function EditUser({}: Props) {
           pagination={false}
         />
       </Drawer>
+      <Modal
+        title="Create new user"
+        visible={isOpenRegisterModal}
+        onOk={() => setOpenRegisterModal(false)}
+        onCancel={() => {
+          setOpenRegisterModal(false);
+        }}
+      >
+        <Form
+          name="basic"
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 16 }}
+          initialValues={{ remember: true }}
+          onFinish={onSubmiteRegister}
+          autoComplete="off"
+        >
+          <Form.Item
+            label="Username"
+            name="username"
+            rules={[{ required: true, message: "Please input username!" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[{ required: true, message: "Please input password!" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[{ required: true, message: "Please input email!" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Role"
+            name="username"
+            rules={[{ required: true, message: "Please input username!" }]}
+          >
+            {/* <Select
+                      className="mr-2"
+                      placeholder="select category"
+                    >
+                      {selectBoxCategory?.map((obj: any, index: number) => (
+                        <Option value={obj.name} key={`category-${index}`}>
+                          {obj.name}
+                        </Option>
+                      ))}
+                    </Select> */}
+          </Form.Item>
+
+          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+            <Button type="primary" htmlType="submit">
+              Create new user
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

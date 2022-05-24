@@ -5,6 +5,8 @@ import { Space, Button, message } from "antd";
 import { Divider } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import axios from "axios";
+import axiosService from "services/axiosService";
+import _ from "lodash";
 
 type AtlasTile = {
   x: number;
@@ -15,7 +17,7 @@ type AtlasTile = {
   top: number;
   topLeft: number;
 };
-let atlas: Record<string, AtlasTile> | null = null;
+
 export const COLOR_BY_TYPE = Object.freeze({
   "62875eab7aad92b518bfec76": {
     color: "#3E6587",
@@ -48,6 +50,7 @@ export const COLOR_BY_TYPE = Object.freeze({
 let hover;
 
 let atlasMock = {};
+let atlasStock = {};
 let selected: Coord[] = [];
 
 const EditMap: React.FC = () => {
@@ -75,7 +78,8 @@ const EditMap: React.FC = () => {
       .get("http://68.183.231.255:12000/api/lands")
       .then((res: any) => {
         atlasMock = res.data.data as Record<string, AtlasTile>;
-        console.log(atlasMock);
+        atlasStock = { ...res.data.data } as Record<string, AtlasTile>;
+        // console.log(atlasMock);
       });
   }
 
@@ -83,11 +87,26 @@ const EditMap: React.FC = () => {
     loadTiles().catch(console.error);
   }, []);
 
+  function getDifference(array1, array2) {
+    return array1.filter((object1) => {
+      return !array2.some((object2) => {
+        return object1 === object2;
+      });
+    });
+  }
+
   async function saveTiles() {
+    let atlasData = Object.entries(atlasMock);
+    let stockData = Object.entries(atlasStock);
+    // console.log({ atlasData, stockData });
+    // console.log(_.differenceWith(atlasData, stockData, _.isEqual));
+    const atlasSend = Object.fromEntries(
+      _.differenceWith(atlasData, stockData, _.isEqual)
+    );
     let dataSend = {
-      data: atlasMock,
+      data: atlasSend,
     };
-    const res = await axios
+    const res = await axiosService
       .post(`http://68.183.231.255:12000/api/lands`, dataSend)
       .then((res: any) => {
         if (res.status === 200) {
