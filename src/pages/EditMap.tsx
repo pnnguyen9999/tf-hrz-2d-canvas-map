@@ -129,12 +129,7 @@ const EditMap: React.FC = () => {
       return {
         // tra ve chessboardLayer
         scale: 1,
-        color:
-          x === 0 || y === 0
-            ? COLOR_BY_TYPE[10]
-            : (x + y) % 2 === 0
-            ? COLOR_BY_TYPE[12]
-            : COLOR_BY_TYPE[13],
+        color: (x + y) % 2 === 0 ? COLOR_BY_TYPE[12] : COLOR_BY_TYPE[13],
       };
     }
   };
@@ -480,23 +475,31 @@ const EditMap: React.FC = () => {
       <div className="col-12 pl-0">
         <div className="row">
           <div className="titlemap-area col-8 p-0" style={{ height: "100vh" }}>
-            <div
-              className="popup-parcel"
-              style={{
-                left: currentPopupData?.top + 20,
-                top: currentPopupData?.left - 20,
-              }}
-            >
-              {atlasMock[`${currentPopupData?.x},${currentPopupData?.y}`]?.type}
-              <div>
+            {atlasMock[`${currentPopupData?.x},${currentPopupData?.y}`] && (
+              <div
+                className="popup-parcel"
+                style={{
+                  left: currentPopupData?.top + 20,
+                  top: currentPopupData?.left - 80,
+                }}
+              >
+                _id:{" "}
                 {
-                  COLOR_BY_TYPE[
-                    atlasMock[`${currentPopupData.x},${currentPopupData.y}`]
-                      ?.type
-                  ]?.name
+                  atlasMock[`${currentPopupData?.x},${currentPopupData?.y}`]
+                    ?._id
                 }
+                <div>
+                  type:{" "}
+                  {
+                    COLOR_BY_TYPE[
+                      atlasMock[`${currentPopupData.x},${currentPopupData.y}`]
+                        ?.type
+                    ]?.name
+                  }
+                </div>
               </div>
-            </div>
+            )}
+
             <TileMap
               ref={refC}
               className="atlas"
