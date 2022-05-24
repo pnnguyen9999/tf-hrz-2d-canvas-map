@@ -4,15 +4,19 @@ import { NavLink } from "react-router-dom";
 import { API_ENDPOINT } from "constant/api";
 import axiosService from "services/axiosService";
 import Login from "./Login";
-import { Button, Space } from "antd";
+import { Button, Form, Input, Modal, Space } from "antd";
 import Cookies from "js-cookie";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { setUserProfile } from "redux/slices/user";
+import _ from "lodash";
 
 export default function Layout(props): ReactElement {
   const dispatch = useDispatch();
+  const [changePasswordForm] = Form.useForm();
   const [userCheckOkay, setCheckOkay] = useState(true);
+  const [isOpenChangePasswordModal, setOpenChangePasswordModal] =
+    useState<boolean>(false);
   const dataUserProfile = useSelector((state) => state.user.dataUserProfile);
   useEffect(() => {
     async function a() {
@@ -37,6 +41,33 @@ export default function Layout(props): ReactElement {
   const handleLogout = () => {
     Cookies.remove("token", { path: "/" });
     window.location.reload();
+  };
+
+  const onSubmitChangePassword = async (values: any) => {
+    if (!_.isEqual(values.oldPassword, values.newPassword)) {
+      const dataSend = {
+        oldPassword: values.oldPassword,
+        newPassword: values.newPassword,
+      };
+      try {
+        await axiosService
+          .put(`${API_ENDPOINT}/auth/changePassword`, dataSend)
+          .then((res: any) => {
+            if (res.status === 200) {
+              console.log(res.data);
+              changePasswordForm.resetFields();
+              toast.info(res.data.message);
+              setOpenChangePasswordModal(false);
+            } else {
+              toast.error("Change password failed !");
+            }
+          });
+      } catch (e) {
+        toast.error("Change password failed");
+      }
+    } else {
+      toast.error("An old is new, a new is old :)");
+    }
   };
   return (
     <div>
@@ -75,13 +106,18 @@ export default function Layout(props): ReactElement {
             </div>
             <div className="col-10">
               <div className="horizon-nav p-3 d-flex justify-content-end align-items-center">
-                <div className="mx-3">
-                  [{dataUserProfile?.role?.toLowerCase()}]: &nbsp;
-                  <b>{dataUserProfile?.email}</b>
-                </div>
-                <Button onClick={() => handleLogout()} danger type="primary">
-                  Logout
-                </Button>
+                <Space size={12}>
+                  <div>
+                    [{dataUserProfile?.role?.toLowerCase()}]: &nbsp;
+                    <b>{dataUserProfile?.email}</b>
+                  </div>
+                  <Button onClick={() => setOpenChangePasswordModal(true)}>
+                    Change Password
+                  </Button>
+                  <Button onClick={() => handleLogout()} danger type="primary">
+                    Logout
+                  </Button>
+                </Space>
               </div>
               <div>{props.children}</div>
             </div>
@@ -90,6 +126,46 @@ export default function Layout(props): ReactElement {
       ) : (
         <Login />
       )}
+      <Modal
+        title="Change Password"
+        visible={isOpenChangePasswordModal}
+        onCancel={() => {
+          setOpenChangePasswordModal(false);
+        }}
+        footer={false}
+      >
+        <Form
+          name="basic"
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 16 }}
+          initialValues={{ remember: true }}
+          onFinish={onSubmitChangePassword}
+          autoComplete="off"
+          form={changePasswordForm}
+        >
+          <Form.Item
+            label="Old password"
+            name="oldPassword"
+            rules={[{ required: true, message: "Please input old password!" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item
+            label="New password"
+            name="newPassword"
+            rules={[{ required: true, message: "Please input password!" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+
+          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+            <Button type="primary" htmlType="submit">
+              Change Password
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

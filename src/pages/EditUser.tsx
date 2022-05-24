@@ -87,8 +87,11 @@ export default function EditUser({}: Props) {
       render: (constraint: any) => {
         return (
           <div
+            className="text-center"
             style={{
               backgroundColor: COLOR_BY_TYPE[constraint.type._id].color,
+              padding: "5px",
+              borderRadius: "5px",
             }}
           >
             {constraint.area.name}, {constraint.type.name}

@@ -25,7 +25,7 @@ export const COLOR_BY_TYPE = Object.freeze({
     name: "User",
   }, // User
   "62875eaf7aad92b518bfec88": {
-    color: "#D2B522",
+    color: "#C4A923",
     name: "Partner",
   }, // Partner
   "62875eeb7aad92b518bfec9e": {
