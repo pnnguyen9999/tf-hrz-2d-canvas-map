@@ -335,7 +335,7 @@ export class TileMap extends React.PureComponent<Props, State> {
             () => onPopup(this.state.popup!)
           );
         }
-      }, 400);
+      }, 10);
     }
 
     if (onHover) {

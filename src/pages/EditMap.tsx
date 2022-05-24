@@ -62,6 +62,8 @@ const EditMap: React.FC = () => {
   const [isEnabledLeft, setEnabledLeft] = useState<boolean>(true);
   const [isEnabledTopLeft, setEnabledTopLeft] = useState<boolean>(true);
 
+  const [currentPopupData, setCurrentPopupData] = useState<any>();
+
   // first & last position of selected group
   const [firstPos, setFirstPos] = useState<any>({});
   const [lastPos, setLastPos] = useState<any>({});
@@ -469,22 +471,32 @@ const EditMap: React.FC = () => {
     }
   };
 
-  // const mouse = useMouse(TileMap, {
-  //   enterDelay: 100,
-  //   leaveDelay: 100,
-  // }) as any;
-
-  // useEffect(() => {
-  //   if (mouse.isDown) {
-  //     console.log(mouse.x);
-  //   }
-  // }, [mouse]);
+  useEffect(() => {
+    // console.log(currentPopupData);
+  }, [currentPopupData]);
 
   return (
     <div className="edit-map">
       <div className="col-12 pl-0">
         <div className="row">
-          <div className="col-8 p-0" style={{ height: "100vh" }}>
+          <div className="titlemap-area col-8 p-0" style={{ height: "100vh" }}>
+            <div
+              className="popup-parcel"
+              style={{
+                left: currentPopupData?.top + 20,
+                top: currentPopupData?.left - 20,
+              }}
+            >
+              {atlasMock[`${currentPopupData?.x},${currentPopupData?.y}`]?.type}
+              <div>
+                {
+                  COLOR_BY_TYPE[
+                    atlasMock[`${currentPopupData.x},${currentPopupData.y}`]
+                      ?.type
+                  ]?.name
+                }
+              </div>
+            </div>
             <TileMap
               ref={refC}
               className="atlas"
@@ -494,9 +506,10 @@ const EditMap: React.FC = () => {
               }}
               onHover={handleHover}
               isDraggable={isEnabledDrag}
-              // onPopup={(arg) => {
-              //   console.log(arg);
-              // }}
+              onPopup={(arg) => {
+                // console.log(arg);
+                setCurrentPopupData(arg);
+              }}
               // onChange={(data) => {
               //   console.log(data);
               // }}
