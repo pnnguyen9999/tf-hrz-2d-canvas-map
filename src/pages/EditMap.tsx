@@ -120,7 +120,9 @@ const EditMap: React.FC = () => {
     const id = x + "," + y;
     if (atlasMock !== null && id in atlasMock) {
       const tile = atlasMock[id];
-      const color = COLOR_BY_TYPE[tile?.type]?.color;
+      const color = atlasMock[id]?.type
+        ? COLOR_BY_TYPE[tile?.type]?.color
+        : COLOR_BY_TYPE[12];
 
       const top = isEnabledTop && !!tile.top;
       const left = isEnabledLeft && !!tile.left;
@@ -136,7 +138,12 @@ const EditMap: React.FC = () => {
       return {
         // tra ve chessboardLayer
         scale: 1,
-        color: (x + y) % 2 === 0 ? COLOR_BY_TYPE[12] : COLOR_BY_TYPE[13],
+        color:
+          x === 0 || y === 0
+            ? COLOR_BY_TYPE[10]
+            : (x + y) % 2 === 0
+            ? COLOR_BY_TYPE[12]
+            : COLOR_BY_TYPE[13],
       };
     }
   };
@@ -302,7 +309,7 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: 0,
@@ -311,7 +318,7 @@ const EditMap: React.FC = () => {
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: 0,
@@ -327,7 +334,7 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -336,7 +343,7 @@ const EditMap: React.FC = () => {
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -351,7 +358,7 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -360,7 +367,7 @@ const EditMap: React.FC = () => {
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -375,7 +382,7 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         left: 1,
@@ -384,7 +391,7 @@ const EditMap: React.FC = () => {
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         left: 1,
@@ -399,7 +406,7 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -408,7 +415,7 @@ const EditMap: React.FC = () => {
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -423,7 +430,7 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: 0,
@@ -432,7 +439,7 @@ const EditMap: React.FC = () => {
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: 0,
@@ -447,11 +454,13 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
       };
       atlasMock[id] = {
         ...atlasMock[id],
+        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
       };
@@ -476,21 +485,21 @@ const EditMap: React.FC = () => {
       );
       atlasAdd[id] = {
         ...atlasAdd[id],
+        type: "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: !!checkTop ? 1 : 0,
         left: !!checkLeft ? 1 : 0,
         topLeft: !!checkTopLeft ? 1 : 0,
-        type: "62875efc7aad92b518bfecb8",
       };
       atlasMock[id] = {
         ...atlasMock[id],
+        type: "62875efc7aad92b518bfecb8",
         x: selected[i].x,
         y: selected[i].y,
         top: !!checkTop ? 1 : 0,
         left: !!checkLeft ? 1 : 0,
         topLeft: !!checkTopLeft ? 1 : 0,
-        type: "62875efc7aad92b518bfecb8",
       };
     }
   };
@@ -623,23 +632,19 @@ const EditMap: React.FC = () => {
                   </Space>
                   <Divider orientation="left">Tool Box</Divider>
                   <Space size={10} wrap>
-                    <Button onClick={() => executeMergeAll()}>
-                      Merge all [&nbsp;]
-                    </Button>
-                    <Button onClick={() => executeMerge()}>
-                      Merge grid [+]
-                    </Button>
+                    <Button onClick={() => executeMergeAll()}>Merge</Button>
+                    <Button onClick={() => executeMerge()}>Create grid</Button>
                     <Button onClick={() => executeConnectAll()}>
                       Connect all
                     </Button>
                     <Button onClick={() => executeConnectTop()}>
-                      Connect top
+                      Disconnect left
                     </Button>
                     <Button onClick={() => executeConnectLeft()}>
-                      Connect left
+                      Disconnect top
                     </Button>
                     <Button onClick={() => executeConnectTopLeftOnly()}>
-                      Connect top left only
+                      Disconnect top left
                     </Button>
                     <Button onClick={() => executeDisconnectAll()}>
                       Disconnect all
