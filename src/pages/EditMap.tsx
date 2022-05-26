@@ -115,7 +115,21 @@ const EditMap: React.FC = () => {
         }
       });
   }
-
+  const areaLayer: any = (x, y) => {
+    return {
+      scale: 1.1,
+      color:
+        y > 0 && x < 0
+          ? "#FF56CC"
+          : y > 0 && x >= 0
+          ? "#8CFF56"
+          : x >= 0 && y <= 0
+          ? "#FF7556"
+          : y <= 0 && x < 0
+          ? "#56A5FF"
+          : "#fff",
+    };
+  };
   const atlasLayer: any = (x, y) => {
     const id = x + "," + y;
     if (atlasMock !== null && id in atlasMock) {
@@ -138,12 +152,7 @@ const EditMap: React.FC = () => {
       return {
         // tra ve chessboardLayer
         scale: 1,
-        color:
-          x === 0 || y === 0
-            ? COLOR_BY_TYPE[10]
-            : (x + y) % 2 === 0
-            ? COLOR_BY_TYPE[12]
-            : COLOR_BY_TYPE[13],
+        color: (x + y) % 2 === 0 ? COLOR_BY_TYPE[12] : COLOR_BY_TYPE[13],
       };
     }
   };
@@ -603,7 +612,7 @@ const EditMap: React.FC = () => {
             <TileMap
               ref={refC}
               className="atlas"
-              layers={[atlasLayer, selectedLayer, hoverStrokeLayer]}
+              layers={[areaLayer, atlasLayer, selectedLayer, hoverStrokeLayer]}
               onClick={(x, y) => {
                 handleOnClick(x, y);
               }}
