@@ -37,7 +37,10 @@ export const COLOR_BY_TYPE = Object.freeze({
     color: "#595B7C",
     name: "Sea",
   }, // Sea
-  4: "#ffbd33", // parcels/estates where I have permissions
+  "628f4b8f5d0772f1dc3c3f68": {
+    color: "#CCCCCC",
+    name: "EmptyLand",
+  }, // parcels/estates where I have permissions
   5: "#5054D4", // districts
   6: "#563db8", // contributions
   7: "#716C7A", // roads
@@ -328,7 +331,7 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         top: 0,
@@ -337,7 +340,7 @@ const EditMap: React.FC = () => {
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         top: 0,
@@ -353,7 +356,7 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -362,7 +365,7 @@ const EditMap: React.FC = () => {
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -377,7 +380,7 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -386,7 +389,7 @@ const EditMap: React.FC = () => {
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -401,7 +404,7 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         left: 1,
@@ -410,7 +413,7 @@ const EditMap: React.FC = () => {
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         left: 1,
@@ -425,7 +428,7 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -434,7 +437,7 @@ const EditMap: React.FC = () => {
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         top: 1,
@@ -449,7 +452,7 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         top: 0,
@@ -458,7 +461,7 @@ const EditMap: React.FC = () => {
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         top: 0,
@@ -473,13 +476,13 @@ const EditMap: React.FC = () => {
       const id = selected[i].x + "," + selected[i].y;
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: atlasMock[id].type || "62875efc7aad92b518bfecb8",
+        type: atlasMock[id].type || "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
       };
@@ -504,7 +507,7 @@ const EditMap: React.FC = () => {
       );
       atlasAdd[id] = {
         ...atlasAdd[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         top: !!checkTop ? 1 : 0,
@@ -513,7 +516,7 @@ const EditMap: React.FC = () => {
       };
       atlasMock[id] = {
         ...atlasMock[id],
-        type: "62875efc7aad92b518bfecb8",
+        type: "628f4b8f5d0772f1dc3c3f68",
         x: selected[i].x,
         y: selected[i].y,
         top: !!checkTop ? 1 : 0,
@@ -567,7 +570,6 @@ const EditMap: React.FC = () => {
         }
         break;
       }
-      default:
       case "sea": {
         for (let i = 0; i < selected.length; i++) {
           const id = selected[i].x + "," + selected[i].y;
@@ -578,6 +580,21 @@ const EditMap: React.FC = () => {
           atlasAdd[id] = {
             ...atlasAdd[id],
             type: "62875efc7aad92b518bfecb8",
+          };
+        }
+        break;
+      }
+      default:
+      case "emptyland": {
+        for (let i = 0; i < selected.length; i++) {
+          const id = selected[i].x + "," + selected[i].y;
+          atlasMock[id] = {
+            ...atlasMock[id],
+            type: "628f4b8f5d0772f1dc3c3f68",
+          };
+          atlasAdd[id] = {
+            ...atlasAdd[id],
+            type: "628f4b8f5d0772f1dc3c3f68",
           };
         }
         break;
@@ -711,6 +728,9 @@ const EditMap: React.FC = () => {
                 <div className="col-6">
                   <Divider orientation="left">Land Types</Divider>
                   <Space size={10} wrap>
+                    <Button onClick={() => setLandType("emptyland")}>
+                      Set to Empty Land
+                    </Button>
                     <Button onClick={() => setLandType("user")}>
                       Set to User's Land
                     </Button>
