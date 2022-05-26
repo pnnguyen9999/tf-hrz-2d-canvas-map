@@ -75,6 +75,8 @@ const EditMap: React.FC = () => {
   const [currentParcel, setCurrentParcel] = useState<any>({});
   const [isEnableDebugMode, setEnableDebugMode] = useState<boolean>(true);
 
+  const [enableColorGrid, setEnableColorGrid] = useState<boolean>(true);
+
   async function loadTiles() {
     await axios.get(`${API_ENDPOINT}/lands`).then((res: any) => {
       atlasMock = res.data.data as Record<string, AtlasTile>;
@@ -116,19 +118,27 @@ const EditMap: React.FC = () => {
       });
   }
   const areaLayer: any = (x, y) => {
-    return {
-      scale: 1.1,
-      color:
-        y > 0 && x < 0
-          ? "#FF56CC"
-          : y > 0 && x >= 0
-          ? "#8CFF56"
-          : x >= 0 && y <= 0
-          ? "#FF7556"
-          : y <= 0 && x < 0
-          ? "#56A5FF"
-          : "#fff",
-    };
+    if (enableColorGrid) {
+      return {
+        scale: 1.1,
+        color:
+          y > 0 && x < 0
+            ? "#FF56CC"
+            : y > 0 && x >= 0
+            ? "#8CFF56"
+            : x >= 0 && y <= 0
+            ? "#FF7556"
+            : y <= 0 && x < 0
+            ? "#56A5FF"
+            : "#fff",
+      };
+    } else {
+      return {
+        // tra ve chessboardLayer
+        // scale: 1,
+        // color: (x + y) % 2 === 0 ? COLOR_BY_TYPE[12] : COLOR_BY_TYPE[13],
+      };
+    }
   };
   const atlasLayer: any = (x, y) => {
     const id = x + "," + y;
@@ -668,6 +678,15 @@ const EditMap: React.FC = () => {
                   </Space>
                   <Divider orientation="left">Visualize</Divider>
                   <Space size={10} wrap>
+                    <Button
+                      onClick={() => setEnableColorGrid(!enableColorGrid)}
+                    >
+                      {enableColorGrid ? (
+                        <>Disable Area Color</>
+                      ) : (
+                        <>Enable Area Color</>
+                      )}
+                    </Button>
                     <Button onClick={() => setEnabledTop(!isEnabledTop)}>
                       {isEnabledTop ? <>Disable Top</> : <>Enable Top</>}
                     </Button>
