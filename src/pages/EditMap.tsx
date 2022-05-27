@@ -9,6 +9,7 @@ import axiosService from "services/axiosService";
 import { toast } from "react-toastify";
 import _ from "lodash";
 import { API_ENDPOINT } from "constant/api";
+import { Viewport } from "components/lib/viewport";
 
 type AtlasTile = {
   x: number;
@@ -18,6 +19,13 @@ type AtlasTile = {
   left: number;
   top: number;
   topLeft: number;
+};
+
+type DragData = {
+  center: Coord;
+  nw: Coord;
+  se: Coord;
+  zoom: number;
 };
 
 export const COLOR_BY_TYPE = Object.freeze({
@@ -80,12 +88,17 @@ const EditMap: React.FC = () => {
 
   const [enableColorGrid, setEnableColorGrid] = useState<boolean>(true);
 
+  const [dragMapData, setDragMapData] = useState<DragData>();
   async function loadTiles() {
-    await axios.get(`${API_ENDPOINT}/lands`).then((res: any) => {
-      atlasMock = res.data.data as Record<string, AtlasTile>;
-      // atlasStock = { ...res.data.data } as Record<string, AtlasTile>;
-      // console.log(atlasMock);
-    });
+    await axios
+      .get(
+        `https://api-dev-map-viewing.horizonland.app/api/lands?start=-15,15&end=15,-15`
+      )
+      .then((res: any) => {
+        atlasMock = res.data.data as Record<string, AtlasTile>;
+        // atlasStock = { ...res.data.data } as Record<string, AtlasTile>;
+        // console.log(atlasMock);
+      });
   }
 
   useEffect(() => {
@@ -603,8 +616,17 @@ const EditMap: React.FC = () => {
   };
 
   useEffect(() => {
-    // console.log(currentPopupData);
-  }, [currentPopupData]);
+    console.log(dragMapData);
+    if (dragMapData) {
+      axios
+        .get(
+          `https://api-dev-map-viewing.horizonland.app/api/lands?start=${dragMapData.nw.x},${dragMapData.nw.y}&end=${dragMapData.se.x},${dragMapData.se.y}`
+        )
+        .then((res: any) => {
+          atlasMock = res.data.data as Record<string, AtlasTile>;
+        });
+    }
+  }, [dragMapData]);
 
   return (
     <div className="edit-map">
@@ -646,12 +668,11 @@ const EditMap: React.FC = () => {
               onHover={handleHover}
               isDraggable={isEnabledDrag}
               onPopup={(arg) => {
-                // console.log(arg);
                 setCurrentPopupData(arg);
               }}
-              // onChange={(data) => {
-              //   console.log(data);
-              // }}
+              onChange={(data) => {
+                setDragMapData(data);
+              }}
             />
           </div>
 
