@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Coord, Layer, TileMap } from "../components";
 import useMouse from "mouse-position";
-import { Space, Button } from "antd";
+import { Space, Button, message } from "antd";
 import { Divider } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import axios from "axios";
@@ -46,7 +46,7 @@ export const COLOR_BY_TYPE = Object.freeze({
     name: "Sea",
   }, // Sea
   "628f4b8f5d0772f1dc3c3f68": {
-    color: "#CCCCCC",
+    color: "#B3B3B3",
     name: "EmptyLand",
   }, // parcels/estates where I have permissions
   5: "#5054D4", // districts
@@ -96,8 +96,6 @@ const EditMap: React.FC = () => {
       )
       .then((res: any) => {
         atlasMock = res.data.data as Record<string, AtlasTile>;
-        // atlasStock = { ...res.data.data } as Record<string, AtlasTile>;
-        // console.log(atlasMock);
       });
   }
 
@@ -617,15 +615,29 @@ const EditMap: React.FC = () => {
 
   useEffect(() => {
     console.log(dragMapData);
-    if (dragMapData) {
-      axios
-        .get(
-          `https://api-dev-map-viewing.horizonland.app/api/lands?start=${dragMapData.nw.x},${dragMapData.nw.y}&end=${dragMapData.se.x},${dragMapData.se.y}`
-        )
-        .then((res: any) => {
-          atlasMock = res.data.data as Record<string, AtlasTile>;
-        });
+    async function loadMore() {
+      if (dragMapData) {
+        const prm = async (): Promise<void> => {
+          return await axios
+            .get(
+              `https://api-dev-map-viewing.horizonland.app/api/lands?start=${dragMapData.nw.x},${dragMapData.nw.y}&end=${dragMapData.se.x},${dragMapData.se.y}`
+            )
+            .then((res: any) => {
+              atlasMock = res.data.data as Record<string, AtlasTile>;
+            });
+        };
+        toast.promise(
+          prm,
+          {
+            pending: "Loading area",
+            success: "Loaded !",
+            error: "Rejected",
+          },
+          { position: toast.POSITION.BOTTOM_LEFT }
+        );
+      }
     }
+    loadMore();
   }, [dragMapData]);
 
   return (
@@ -637,8 +649,8 @@ const EditMap: React.FC = () => {
               <div
                 className="popup-parcel"
                 style={{
-                  left: currentPopupData?.top + 20,
-                  top: currentPopupData?.left - 80,
+                  left: currentPopupData?.top + 30,
+                  top: currentPopupData?.left - 100,
                 }}
               >
                 _id:{" "}
