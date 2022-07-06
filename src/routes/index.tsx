@@ -1,5 +1,6 @@
 import Dashboard from "pages/Dashboard";
 import EditMap from "pages/EditMap";
+import EditMapO from "pages/EditMapO";
 import EditUser from "pages/EditUser";
 import Login from "pages/Login";
 
@@ -7,7 +8,7 @@ const routesGlobal = [
   {
     exact: true,
     path: "/edit-map",
-    element: <EditMap />,
+    element: <EditMapO />,
   },
   {
     exact: true,

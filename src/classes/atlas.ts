@@ -1,0 +1,272 @@
+import { Layer } from "components";
+
+export const COLOR_BY_TYPE = Object.freeze({
+  "62875eab7aad92b518bfec76": {
+    color: "#3E6587",
+    name: "User",
+  }, // User
+  "62875eaf7aad92b518bfec88": {
+    color: "#C4A923",
+    name: "Partner",
+  }, // Partner
+  "62875eeb7aad92b518bfec9e": {
+    color: "#1A54A4",
+    name: "Horizon Land",
+  }, // Horizon
+  "62875efc7aad92b518bfecb8": {
+    color: "#595B7C",
+    name: "Sea",
+  }, // Sea
+  "628f4b8f5d0772f1dc3c3f68": {
+    color: "#B3B3B3",
+    name: "EmptyLand",
+  }, // parcels/estates where I have permissions
+  5: "#5054D4", // districts
+  6: "#563db8", // contributions
+  7: "#716C7A", // roads
+  8: "#70AC76", // plazas
+  9: "#3D3A46", // owned parcel/estate
+  10: "#3D3A46", // parcels on sale (we show them as owned parcels)
+  11: "#09080A", // unowned pacel/estate
+  12: "#CCCCCC", // background
+  13: "#E3E3E3", // loading odd
+  14: "#0d0b0e", // loading even
+});
+
+export type AtlasTile = {
+  x: number;
+  y: number;
+  type: number;
+  estate_id: number;
+  left: number;
+  top: number;
+  topLeft: number;
+};
+
+interface BasicCoord {
+  x: number;
+  y: number;
+}
+
+export class Atlas {
+  public atlasData: any;
+  public isEnabledTop: boolean;
+  public isEnabledLeft: boolean;
+  public isEnabledTopLeft: boolean;
+  public currentHover: BasicCoord;
+  private firstPos: BasicCoord;
+  private lastPos: BasicCoord;
+  private selectedArea: BasicCoord[];
+
+  public parseInfoData = (_atlasData) => {
+    this.atlasData = _atlasData;
+  };
+
+  public parseVisualizeToogle = (
+    _isEnabledTop,
+    _isEnabledLeft,
+    _isEnabledTopLeft
+  ) => {
+    this.isEnabledTop = _isEnabledTop;
+    this.isEnabledLeft = _isEnabledLeft;
+    this.isEnabledTopLeft = _isEnabledTopLeft;
+  };
+
+  public handleHover: any = (x, y) => {
+    // console.log({ x, y });
+    this.currentHover = {
+      x,
+      y,
+    };
+  };
+
+  public onClickAtlas: any = (x, y) => {
+    if (
+      typeof this.firstPos?.x !== "undefined" &&
+      typeof this.firstPos?.y !== "undefined" &&
+      typeof this.lastPos?.x !== "undefined" &&
+      typeof this.lastPos?.y !== "undefined"
+    ) {
+      this.firstPos = null;
+      this.lastPos = null;
+      /* remove selected area if we have first & last position */
+      this.processSelectedParcel();
+    } else {
+      if (
+        typeof this.firstPos?.x !== "undefined" &&
+        typeof this.firstPos?.y !== "undefined"
+      ) {
+        if (this.isValidSquare()) {
+          this.lastPos = {
+            x,
+            y,
+          };
+          this.processSelectedParcel();
+        } else {
+          this.firstPos = null;
+          this.lastPos = null;
+        }
+      } else {
+        this.firstPos = {
+          x,
+          y,
+        };
+      }
+    }
+  };
+
+  private processSelectedParcel = () => {
+    let xMin = Math.min(this.firstPos?.x, this.lastPos?.x);
+    let xMax = Math.max(this.firstPos?.x, this.lastPos?.x);
+    let yMin = Math.min(this.firstPos?.y, this.lastPos?.y);
+    let yMax = Math.max(this.firstPos?.y, this.lastPos?.y);
+    const startPointX = xMin;
+    const startPointY = yMin;
+    this.selectedArea = [];
+    for (let i = 0; i < xMax - xMin + 1; i++) {
+      for (let j = 0; j < yMax - yMin + 1; j++) {
+        this.selectedArea.push({ x: startPointX + i, y: startPointY + j });
+      }
+    }
+  };
+
+  private isSelectedGroup = (x: number, y: number) =>
+    this.selectedArea?.some((coord) => coord.x === x && coord.y === y);
+
+  private isValidSquare = () => {
+    if (!this.currentHover) return false;
+    if (false) {
+      if (
+        typeof this.firstPos?.x !== "undefined" &&
+        typeof this.firstPos?.y !== "undefined" &&
+        !(
+          typeof this.lastPos?.x !== "undefined" &&
+          typeof this.lastPos?.y !== "undefined"
+        )
+      ) {
+        let xMin = Math.min(this.firstPos?.x, this.currentHover.x);
+        let xMax = Math.max(this.firstPos?.x, this.currentHover.x);
+        let yMin = Math.min(this.firstPos?.y, this.currentHover.y);
+        let yMax = Math.max(this.firstPos?.y, this.currentHover.y);
+        return (
+          Math.abs(xMax - xMin) < 5 &&
+          Math.abs(yMin - yMax) < 5 &&
+          Math.abs(xMax - xMin) === Math.abs(yMin - yMax)
+        );
+      }
+    } else {
+      return true;
+    }
+  };
+  private isHighlighted = (x: number, y: number) => {
+    if (!this.currentHover) return false;
+
+    if (
+      typeof this.firstPos?.x !== "undefined" &&
+      typeof this.firstPos?.y !== "undefined" &&
+      !(
+        typeof this.lastPos?.x !== "undefined" &&
+        typeof this.lastPos?.y !== "undefined"
+      )
+    ) {
+      let xMin = Math.min(this.firstPos?.x, this.currentHover.x);
+      let xMax = Math.max(this.firstPos?.x, this.currentHover.x);
+      let yMin = Math.min(this.firstPos?.y, this.currentHover.y);
+      let yMax = Math.max(this.firstPos?.y, this.currentHover.y);
+      return (
+        /**
+         * @rotateAroundAxis -> x > 0, y > 0
+         */
+        (xMin <= x &&
+          x <= this.currentHover.x &&
+          yMin <= y &&
+          y <= this.currentHover.y) ||
+        /**
+         * @rotateAroundAxis -> x > 0, y < 0
+         */
+        (xMin <= x &&
+          x <= this.currentHover.x &&
+          yMax >= y &&
+          y >= this.currentHover.y) ||
+        /**
+         * @rotateAroundAxis -> x < 0, y > 0
+         */
+        (xMax >= x &&
+          x >= this.currentHover.x &&
+          yMin <= y &&
+          y <= this.currentHover.y) ||
+        /**
+         * @rotateAroundAxis -> x < 0, y < 0
+         */
+        (xMax >= x &&
+          x >= this.currentHover.x &&
+          yMax >= y &&
+          y >= this.currentHover.y)
+      );
+    } else {
+      return this.currentHover.x === x && this.currentHover.y === y;
+    }
+  };
+
+  public renderAtlasLayer: Layer = (x, y) => {
+    const id = x + "," + y;
+    if (this.atlasData !== null && id in this.atlasData) {
+      const tile = this.atlasData[id];
+      const color = this.atlasData[id]?.type
+        ? COLOR_BY_TYPE[tile?.type]?.color
+        : COLOR_BY_TYPE[12];
+
+      const top = this.isEnabledTop && !!tile.top;
+      const left = this.isEnabledLeft && !!tile.left;
+      const topLeft = this.isEnabledTopLeft && !!tile.topLeft;
+      // console.log({ color, top, left, topLeft });
+      return {
+        color,
+        top,
+        left,
+        topLeft,
+      };
+    } else {
+      return {
+        // tra ve chessboardLayer
+        scale: 1,
+        color: (x + y) % 2 === 0 ? COLOR_BY_TYPE[12] : COLOR_BY_TYPE[13],
+      };
+    }
+  };
+
+  public renderHoverLayer: Layer = (x, y) => {
+    if (this.isHighlighted(x, y)) {
+      return {
+        color: this.isValidSquare() ? "#8A8DD4" : "#ff2200",
+        scale: 1,
+      };
+    }
+    return null;
+  };
+
+  public selectedLayer: any = (x, y) => {
+    /**
+     * draw a selected group
+     */
+    if (this.isSelectedGroup(x, y)) {
+      return {
+        color: "#212356",
+        scale: 1,
+      };
+    }
+    //     /**
+    //      * draw 2 points firstPos & lastPos
+    //      */
+    if (
+      (this.firstPos?.x === x && this.firstPos?.y === y) ||
+      (this.lastPos?.x === x && this.lastPos?.y === y)
+    ) {
+      return {
+        color: "#8A8DD4",
+        scale: 1,
+      };
+    }
+    return null;
+  };
+}
