@@ -301,7 +301,7 @@ export class Atlas {
     return null;
   };
 
-  public selectedLayer: any = (x, y) => {
+  public renderSelectedLayer: Layer = (x, y) => {
     /**
      * draw a selected group
      */
@@ -324,6 +324,22 @@ export class Atlas {
       };
     }
     return null;
+  };
+
+  public renderColorAreaLayer: Layer = (x, y) => {
+    return {
+      scale: 1.1,
+      color:
+        y > 0 && x < 0
+          ? "#FF56CC"
+          : y > 0 && x >= 0
+          ? "#8CFF56"
+          : x >= 0 && y <= 0
+          ? "#FF7556"
+          : y <= 0 && x < 0
+          ? "#56A5FF"
+          : "#fff",
+    };
   };
 
   public async saveTiles() {

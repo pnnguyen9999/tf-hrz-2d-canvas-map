@@ -105,9 +105,10 @@ export default function EditMapO({}: Props) {
                 <TileMap
                   className="atlas"
                   layers={[
+                    atlasCreate.renderColorAreaLayer,
                     atlasCreate.renderAtlasLayer,
                     atlasCreate.renderHoverLayer,
-                    atlasCreate.selectedLayer,
+                    atlasCreate.renderSelectedLayer,
                   ]}
                   onChange={(data) => {
                     setDragMapData(data);
