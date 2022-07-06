@@ -1,4 +1,7 @@
 import { Layer } from "components";
+import { API_ENDPOINT } from "constant/api";
+import { toast } from "react-toastify";
+import axiosService from "services/axiosService";
 
 export const COLOR_BY_TYPE = Object.freeze({
   "62875eab7aad92b518bfec76": {
@@ -49,17 +52,23 @@ interface BasicCoord {
 }
 
 export class Atlas {
-  public atlasData: any;
-  public isEnabledTop: boolean;
-  public isEnabledLeft: boolean;
-  public isEnabledTopLeft: boolean;
-  public currentHover: BasicCoord;
+  public atlasData = {};
+  public dataSave = {};
+  private isEnabledTop: boolean = true;
+  private isEnabledLeft: boolean = true;
+  private isEnabledTopLeft: boolean = true;
+  private isFreeRectangle: boolean;
+  private currentHover: BasicCoord;
   private firstPos: BasicCoord;
   private lastPos: BasicCoord;
   private selectedArea: BasicCoord[];
 
+  //   constructor() {
+  //     this.dataSave = [];
+  //   }
+
   public parseInfoData = (_atlasData) => {
-    this.atlasData = _atlasData;
+    this.atlasData = { ..._atlasData, ...this.atlasData };
   };
 
   public parseVisualizeToogle = (
@@ -70,6 +79,53 @@ export class Atlas {
     this.isEnabledTop = _isEnabledTop;
     this.isEnabledLeft = _isEnabledLeft;
     this.isEnabledTopLeft = _isEnabledTopLeft;
+  };
+
+  public parseDragMode = (_isFreeRectangle) => {
+    this.isFreeRectangle = _isFreeRectangle;
+  };
+
+  public returnAtlasData = () => this.atlasData;
+
+  public executeMerge = (): void => {
+    let checkTop;
+    let checkLeft;
+    let checkTopLeft;
+    for (let i = 0; i < this.selectedArea.length; i++) {
+      const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
+
+      checkTop = this.selectedArea.find(
+        (e) =>
+          e.x === this.selectedArea[i].x && e.y === this.selectedArea[i].y + 1
+      );
+      checkLeft = this.selectedArea.find(
+        (e) =>
+          e.x === this.selectedArea[i].x - 1 && e.y === this.selectedArea[i].y
+      );
+      checkTopLeft = this.selectedArea.find(
+        (e) =>
+          e.x === this.selectedArea[i].x - 1 &&
+          e.y === this.selectedArea[i].y + 1
+      );
+
+      const obj = {
+        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
+        x: this.selectedArea[i].x,
+        y: this.selectedArea[i].y,
+        top: !!checkTop,
+        left: !!checkLeft,
+        topLeft: !!checkTopLeft,
+      };
+      this.dataSave[id] = {
+        ...this.dataSave[id],
+        ...obj,
+      };
+      this.atlasData[id] = {
+        ...this.atlasData[id],
+        ...obj,
+      };
+    }
+    console.log(this.atlasData);
   };
 
   public handleHover: any = (x, y) => {
@@ -135,7 +191,7 @@ export class Atlas {
 
   private isValidSquare = () => {
     if (!this.currentHover) return false;
-    if (false) {
+    if (!this.isFreeRectangle) {
       if (
         typeof this.firstPos?.x !== "undefined" &&
         typeof this.firstPos?.y !== "undefined" &&
@@ -144,10 +200,10 @@ export class Atlas {
           typeof this.lastPos?.y !== "undefined"
         )
       ) {
-        let xMin = Math.min(this.firstPos?.x, this.currentHover.x);
-        let xMax = Math.max(this.firstPos?.x, this.currentHover.x);
-        let yMin = Math.min(this.firstPos?.y, this.currentHover.y);
-        let yMax = Math.max(this.firstPos?.y, this.currentHover.y);
+        let xMin = Math.min(this.firstPos?.x, this.currentHover?.x);
+        let xMax = Math.max(this.firstPos?.x, this.currentHover?.x);
+        let yMin = Math.min(this.firstPos?.y, this.currentHover?.y);
+        let yMax = Math.max(this.firstPos?.y, this.currentHover?.y);
         return (
           Math.abs(xMax - xMin) < 5 &&
           Math.abs(yMin - yMax) < 5 &&
@@ -269,4 +325,21 @@ export class Atlas {
     }
     return null;
   };
+
+  public async saveTiles() {
+    console.log(this.dataSave);
+    let dataSend = {
+      data: this.dataSave,
+    };
+    await axiosService
+      .post(`${API_ENDPOINT}/lands`, dataSend)
+      .then((res: any) => {
+        if (res.status === 200) {
+          toast.info(res.data.message);
+          this.dataSave = {};
+        } else {
+          toast.error("save failed");
+        }
+      });
+  }
 }

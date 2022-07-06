@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button, Divider, Space } from "antd";
 import axios from "axios";
 import { Atlas, AtlasTile, COLOR_BY_TYPE } from "classes/atlas";
 import { Coord, TileMap } from "components";
 import React, { useEffect, useState } from "react";
+import _ from "lodash";
 
 type Props = {};
 type DragData = {
@@ -14,24 +16,27 @@ type DragData = {
 
 export default function EditMapO({}: Props) {
   //   let atlasCreate = new Atlas();
-  const [atlasCreate, setAtlasCreate] = useState<any>(new Atlas());
+  const [atlasCreate, setAtlasCreate] = useState<Atlas>(new Atlas());
   const [isReady, setReady] = useState<boolean>(false);
   const [isEnabledTop, setEnabledTop] = useState<boolean>(true);
   const [isEnabledLeft, setEnabledLeft] = useState<boolean>(true);
   const [isEnabledTopLeft, setEnabledTopLeft] = useState<boolean>(true);
+  const [isFreeRectangle, setFreeRectangle] = useState<boolean>(true);
   const [dragMapData, setDragMapData] = useState<DragData>();
   const [dataMapFromAPI, setDataMapFromAPI] = useState<
     Record<string, AtlasTile> | any
   >();
   const [currentHover, setCurrentHover] = useState<any>();
   const [currentPopupData, setCurrentPopupData] = useState<any>();
+  const [tilesMap, setTilesMap] = useState<any>();
+  const [atlasRender, setAtlasRender] = useState<any>();
 
   useEffect(() => {
     async function loadMap() {
       await axios
         .get(
           dragMapData
-            ? `https://api-dev-map-viewing.horizonland.app/api/lands?start=${dragMapData.nw.x},${dragMapData.nw.y}&end=${dragMapData.se.x},${dragMapData.se.y}`
+            ? `https://api-dev-map-viewing.horizonland.app/api/lands?start=${dragMapData?.nw?.x},${dragMapData?.nw?.y}&end=${dragMapData?.se?.x},${dragMapData?.se?.y}`
             : `https://api-dev-map-viewing.horizonland.app/api/lands?start=-15,15&end=15,-15`
         )
         .then(async (res: any) => {
@@ -54,8 +59,13 @@ export default function EditMapO({}: Props) {
         isEnabledTopLeft
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady, isEnabledLeft, isEnabledTop, isEnabledTopLeft]);
+  }, [isReady, isEnabledLeft, isEnabledTop, isEnabledTopLeft, atlasCreate]);
+
+  useEffect(() => {
+    if (isReady) {
+      atlasCreate.parseDragMode(isFreeRectangle);
+    }
+  }, [isReady, atlasCreate, isFreeRectangle]);
 
   return (
     <div>
@@ -85,7 +95,7 @@ export default function EditMapO({}: Props) {
                       {
                         COLOR_BY_TYPE[
                           dataMapFromAPI[
-                            `${currentPopupData.x},${currentPopupData.y}`
+                            `${currentPopupData?.x},${currentPopupData?.y}`
                           ]?.type
                         ]?.name
                       }
@@ -120,14 +130,22 @@ export default function EditMapO({}: Props) {
                 <div className="col-6">
                   <Divider orientation="left">Drag Mode</Divider>
                   <Space size={10} wrap>
-                    {/* <Button onClick={() => setFreeRectangle(!isFreeRectangle)}>
+                    <Button onClick={() => setFreeRectangle(!isFreeRectangle)}>
                       Current mode:&nbsp;{" "}
                       {isFreeRectangle ? <>Reactagle</> : <>Square</>}
-                    </Button> */}
+                    </Button>
                   </Space>
                   <Divider orientation="left">Tool Box</Divider>
                   <Space size={10} wrap>
-                    {/* <Button onClick={() => executeMergeAll()}>Merge</Button>
+                    <Button
+                      onClick={async () => {
+                        await atlasCreate.executeMerge();
+                        // setAtlasRender(atlasCreate.renderAtlasLayer);
+                      }}
+                    >
+                      Merge
+                    </Button>
+                    {/*
                     <Button onClick={() => executeMerge()}>Create grid</Button>
                     <Button onClick={() => executeConnectAll()}>
                       Connect all
@@ -180,9 +198,14 @@ export default function EditMapO({}: Props) {
                     </Button>
                   </Space>
                   <Divider orientation="left">Data Interaction</Divider>
-                  {/* <Button type="primary" onClick={() => saveTiles()}>
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      atlasCreate.saveTiles();
+                    }}
+                  >
                     Save Map
-                  </Button> */}
+                  </Button>
                 </div>
                 <div className="col-6">
                   <Divider orientation="left">Land Types</Divider>
