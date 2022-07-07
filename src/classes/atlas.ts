@@ -3,6 +3,7 @@ import { Layer } from "components";
 import { API_ENDPOINT } from "constant/api";
 import { toast } from "react-toastify";
 import axiosService from "services/axiosService";
+import _ from "lodash";
 
 export const COLOR_BY_TYPE = Object.freeze({
   "62875eab7aad92b518bfec76": {
@@ -70,6 +71,11 @@ export class Atlas {
   //   }
 
   public parseInfoData = (_atlasData) => {
+    // const check =
+    //   _.findIndex(Object.assign(this.atlasData), (o) => {
+    //     return _.isMatch(o, Object.assign(_atlasData));
+    //   }) > -1;
+    // console.log(check);
     this.atlasData = { ..._atlasData, ...this.atlasData };
   };
 
