@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Layer } from "components";
 import { API_ENDPOINT } from "constant/api";
 import { toast } from "react-toastify";
@@ -54,10 +55,11 @@ interface BasicCoord {
 export class Atlas {
   public atlasData = {};
   public dataSave = {};
-  private isEnabledTop: boolean = true;
-  private isEnabledLeft: boolean = true;
-  private isEnabledTopLeft: boolean = true;
+  private isEnabledTop: boolean;
+  private isEnabledLeft: boolean;
+  private isEnabledTopLeft: boolean;
   private isFreeRectangle: boolean;
+  private isEnableColorGrid: boolean;
   private currentHover: BasicCoord;
   private firstPos: BasicCoord;
   private lastPos: BasicCoord;
@@ -74,11 +76,13 @@ export class Atlas {
   public parseVisualizeToogle = (
     _isEnabledTop,
     _isEnabledLeft,
-    _isEnabledTopLeft
+    _isEnabledTopLeft,
+    _isEnableColorGrid
   ) => {
     this.isEnabledTop = _isEnabledTop;
     this.isEnabledLeft = _isEnabledLeft;
     this.isEnabledTopLeft = _isEnabledTopLeft;
+    this.isEnableColorGrid = _isEnableColorGrid;
   };
 
   public parseDragMode = (_isFreeRectangle) => {
@@ -86,47 +90,6 @@ export class Atlas {
   };
 
   public returnAtlasData = () => this.atlasData;
-
-  public executeMerge = (): void => {
-    let checkTop;
-    let checkLeft;
-    let checkTopLeft;
-    for (let i = 0; i < this.selectedArea.length; i++) {
-      const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
-
-      checkTop = this.selectedArea.find(
-        (e) =>
-          e.x === this.selectedArea[i].x && e.y === this.selectedArea[i].y + 1
-      );
-      checkLeft = this.selectedArea.find(
-        (e) =>
-          e.x === this.selectedArea[i].x - 1 && e.y === this.selectedArea[i].y
-      );
-      checkTopLeft = this.selectedArea.find(
-        (e) =>
-          e.x === this.selectedArea[i].x - 1 &&
-          e.y === this.selectedArea[i].y + 1
-      );
-
-      const obj = {
-        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
-        x: this.selectedArea[i].x,
-        y: this.selectedArea[i].y,
-        top: !!checkTop,
-        left: !!checkLeft,
-        topLeft: !!checkTopLeft,
-      };
-      this.dataSave[id] = {
-        ...this.dataSave[id],
-        ...obj,
-      };
-      this.atlasData[id] = {
-        ...this.atlasData[id],
-        ...obj,
-      };
-    }
-    console.log(this.atlasData);
-  };
 
   public handleHover: any = (x, y) => {
     // console.log({ x, y });
@@ -327,34 +290,297 @@ export class Atlas {
   };
 
   public renderColorAreaLayer: Layer = (x, y) => {
-    return {
-      scale: 1.1,
-      color:
-        y > 0 && x < 0
-          ? "#FF56CC"
-          : y > 0 && x >= 0
-          ? "#8CFF56"
-          : x >= 0 && y <= 0
-          ? "#FF7556"
-          : y <= 0 && x < 0
-          ? "#56A5FF"
-          : "#fff",
-    };
+    if (this.isEnableColorGrid) {
+      return {
+        scale: 1.1,
+        color:
+          y > 0 && x < 0
+            ? "#FF56CC"
+            : y > 0 && x >= 0
+            ? "#8CFF56"
+            : x >= 0 && y <= 0
+            ? "#FF7556"
+            : y <= 0 && x < 0
+            ? "#56A5FF"
+            : "#fff",
+      };
+    } else {
+      return {
+        // tra ve chessboardLayer
+        scale: 1,
+        color: (x + y) % 2 === 0 ? COLOR_BY_TYPE[12] : COLOR_BY_TYPE[13],
+      };
+    }
+  };
+
+  public executeMerge = (): void => {
+    let checkTop;
+    let checkLeft;
+    let checkTopLeft;
+    for (let i = 0; i < this.selectedArea.length; i++) {
+      const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
+
+      checkTop = this.selectedArea.find(
+        (e) =>
+          e.x === this.selectedArea[i].x && e.y === this.selectedArea[i].y + 1
+      );
+      checkLeft = this.selectedArea.find(
+        (e) =>
+          e.x === this.selectedArea[i].x - 1 && e.y === this.selectedArea[i].y
+      );
+      checkTopLeft = this.selectedArea.find(
+        (e) =>
+          e.x === this.selectedArea[i].x - 1 &&
+          e.y === this.selectedArea[i].y + 1
+      );
+
+      const obj = {
+        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
+        x: this.selectedArea[i].x,
+        y: this.selectedArea[i].y,
+        top: !!checkTop,
+        left: !!checkLeft,
+        topLeft: !!checkTopLeft,
+      };
+      this.dataSave[id] = {
+        ...this.dataSave[id],
+        ...obj,
+      };
+      this.atlasData[id] = {
+        ...this.atlasData[id],
+        ...obj,
+      };
+    }
+  };
+
+  public executeCreateGrid = (): void => {
+    for (let i = 0; i < this.selectedArea.length; i++) {
+      const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
+      const obj = {
+        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
+        x: this.selectedArea[i].x,
+        y: this.selectedArea[i].y,
+        top: 0,
+        left: 0,
+        topLeft: 0,
+      };
+      this.dataSave[id] = {
+        ...this.dataSave[id],
+        ...obj,
+      };
+      this.atlasData[id] = {
+        ...this.atlasData[id],
+        ...obj,
+      };
+    }
+  };
+
+  public executeConnectAll = (): void => {
+    for (let i = 0; i < this.selectedArea.length; i++) {
+      const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
+      const obj = {
+        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
+        x: this.selectedArea[i].x,
+        y: this.selectedArea[i].y,
+        top: 1,
+        left: 1,
+        topLeft: 1,
+      };
+      this.dataSave[id] = {
+        ...this.dataSave[id],
+        ...obj,
+      };
+      this.atlasData[id] = {
+        ...this.atlasData[id],
+        ...obj,
+      };
+    }
+  };
+
+  public executeConnectTop = (): void => {
+    for (let i = 0; i < this.selectedArea.length; i++) {
+      const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
+      const obj = {
+        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
+        x: this.selectedArea[i].x,
+        y: this.selectedArea[i].y,
+        top: 1,
+        left: 0,
+        topLeft: 0,
+      };
+      this.dataSave[id] = {
+        ...this.dataSave[id],
+        ...obj,
+      };
+      this.atlasData[id] = {
+        ...this.atlasData[id],
+        ...obj,
+      };
+    }
+  };
+
+  public executeConnectLeft = (): void => {
+    for (let i = 0; i < this.selectedArea.length; i++) {
+      const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
+      const obj = {
+        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
+        x: this.selectedArea[i].x,
+        y: this.selectedArea[i].y,
+        top: 0,
+        left: 1,
+        topLeft: 0,
+      };
+      this.dataSave[id] = {
+        ...this.dataSave[id],
+        ...obj,
+      };
+      this.atlasData[id] = {
+        ...this.atlasData[id],
+        ...obj,
+      };
+    }
+  };
+
+  public executeConnectTopLeftOnly = (): void => {
+    for (let i = 0; i < this.selectedArea.length; i++) {
+      const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
+      const obj = {
+        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
+        x: this.selectedArea[i].x,
+        y: this.selectedArea[i].y,
+        top: 1,
+        left: 1,
+        topLeft: 0,
+      };
+      this.dataSave[id] = {
+        ...this.dataSave[id],
+        ...obj,
+      };
+      this.atlasData[id] = {
+        ...this.atlasData[id],
+        ...obj,
+      };
+    }
+  };
+
+  public setLandType = (type: string) => {
+    switch (type) {
+      case "user": {
+        for (let i = 0; i < this.selectedArea.length; i++) {
+          const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
+          this.atlasData[id] = {
+            ...this.atlasData[id],
+            type: "62875eab7aad92b518bfec76",
+          };
+          this.dataSave[id] = {
+            ...this.atlasData[id],
+            type: "62875eab7aad92b518bfec76",
+          };
+        }
+        break;
+      }
+      case "partner": {
+        for (let i = 0; i < this.selectedArea.length; i++) {
+          const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
+          this.atlasData[id] = {
+            ...this.atlasData[id],
+            type: "62875eaf7aad92b518bfec88",
+          };
+          this.dataSave[id] = {
+            ...this.atlasData[id],
+            type: "62875eaf7aad92b518bfec88",
+          };
+        }
+        break;
+      }
+      case "horizon": {
+        for (let i = 0; i < this.selectedArea.length; i++) {
+          const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
+          this.atlasData[id] = {
+            ...this.atlasData[id],
+            type: "62875eeb7aad92b518bfec9e",
+          };
+          this.dataSave[id] = {
+            ...this.atlasData[id],
+            type: "62875eeb7aad92b518bfec9e",
+          };
+        }
+        break;
+      }
+      case "sea": {
+        for (let i = 0; i < this.selectedArea.length; i++) {
+          const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
+          this.atlasData[id] = {
+            ...this.atlasData[id],
+            type: "62875efc7aad92b518bfecb8",
+          };
+          this.dataSave[id] = {
+            ...this.atlasData[id],
+            type: "62875efc7aad92b518bfecb8",
+          };
+        }
+        break;
+      }
+      default:
+      case "emptyland": {
+        for (let i = 0; i < this.selectedArea.length; i++) {
+          const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
+          this.atlasData[id] = {
+            ...this.atlasData[id],
+            type: "628f4b8f5d0772f1dc3c3f68",
+          };
+          this.dataSave[id] = {
+            ...this.atlasData[id],
+            type: "628f4b8f5d0772f1dc3c3f68",
+          };
+        }
+        break;
+      }
+    }
   };
 
   public async saveTiles() {
-    console.log(this.dataSave);
+    let that = this;
+    let dataProcess = { ...this.dataSave };
     let dataSend = {
       data: this.dataSave,
     };
+    async function asyncGetRightLand() {
+      let dataArray: any = Object.entries(dataProcess);
+      let xMin = Math.min(
+        dataArray[0][1].x,
+        dataArray[dataArray.length - 1][1].x
+      );
+      let xMax = Math.max(
+        dataArray[0][1].x,
+        dataArray[dataArray.length - 1][1].x
+      );
+      let yMin = Math.min(
+        dataArray[0][1].y,
+        dataArray[dataArray.length - 1][1].y
+      );
+      let yMax = Math.max(
+        dataArray[0][1].y,
+        dataArray[dataArray.length - 1][1].y
+      );
+      await axios
+        .get(
+          `https://api-dev-map-viewing.horizonland.app/api/lands?start=${xMin},${yMax}&end=${xMax},${yMin}`
+        )
+        .then(async (res: any) => {
+          that.atlasData = { ...that.atlasData, ...res.data.data };
+        });
+    }
     await axiosService
       .post(`${API_ENDPOINT}/lands`, dataSend)
       .then((res: any) => {
-        if (res.status === 200) {
+        if (res.data.status) {
           toast.info(res.data.message);
           this.dataSave = {};
         } else {
-          toast.error("save failed");
+          this.dataSave = {};
+          asyncGetRightLand();
+          toast.error(res.data.message);
         }
       });
   }

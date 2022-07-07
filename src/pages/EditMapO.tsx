@@ -3,7 +3,7 @@ import { Button, Divider, Space } from "antd";
 import axios from "axios";
 import { Atlas, AtlasTile, COLOR_BY_TYPE } from "classes/atlas";
 import { Coord, TileMap } from "components";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import _ from "lodash";
 
 type Props = {};
@@ -18,20 +18,20 @@ export default function EditMapO({}: Props) {
   //   let atlasCreate = new Atlas();
   const [atlasCreate, setAtlasCreate] = useState<Atlas>(new Atlas());
   const [isReady, setReady] = useState<boolean>(false);
+  const [isEnabledDrag, setEnabledDrag] = useState<boolean>(true);
   const [isEnabledTop, setEnabledTop] = useState<boolean>(true);
   const [isEnabledLeft, setEnabledLeft] = useState<boolean>(true);
   const [isEnabledTopLeft, setEnabledTopLeft] = useState<boolean>(true);
   const [isFreeRectangle, setFreeRectangle] = useState<boolean>(true);
+  const [isEnableColorGrid, setEnableColorGrid] = useState<boolean>(true);
   const [dragMapData, setDragMapData] = useState<DragData>();
   const [dataMapFromAPI, setDataMapFromAPI] = useState<
     Record<string, AtlasTile> | any
   >();
   const [currentHover, setCurrentHover] = useState<any>();
   const [currentPopupData, setCurrentPopupData] = useState<any>();
-  const [tilesMap, setTilesMap] = useState<any>();
-  const [atlasRender, setAtlasRender] = useState<any>();
 
-  useEffect(() => {
+  useMemo(() => {
     async function loadMap() {
       await axios
         .get(
@@ -40,12 +40,13 @@ export default function EditMapO({}: Props) {
             : `https://api-dev-map-viewing.horizonland.app/api/lands?start=-15,15&end=15,-15`
         )
         .then(async (res: any) => {
-          console.log("loaded");
           await atlasCreate.parseInfoData(
             res.data.data as Record<string, AtlasTile>
           );
           setDataMapFromAPI(res.data.data as Record<string, AtlasTile>);
           setReady(true);
+          setEnabledDrag(true);
+          console.log("loaded");
         });
     }
     loadMap();
@@ -56,10 +57,18 @@ export default function EditMapO({}: Props) {
       atlasCreate.parseVisualizeToogle(
         isEnabledTop,
         isEnabledLeft,
-        isEnabledTopLeft
+        isEnabledTopLeft,
+        isEnableColorGrid
       );
     }
-  }, [isReady, isEnabledLeft, isEnabledTop, isEnabledTopLeft, atlasCreate]);
+  }, [
+    isReady,
+    isEnabledLeft,
+    isEnabledTop,
+    isEnabledTopLeft,
+    atlasCreate,
+    isEnableColorGrid,
+  ]);
 
   useEffect(() => {
     if (isReady) {
@@ -72,7 +81,7 @@ export default function EditMapO({}: Props) {
       <div className="col-12">
         <div className="row">
           <div className="titlemap-area col-8 p-0" style={{ height: "100vh" }}>
-            {isReady && (
+            {isReady && dataMapFromAPI && (
               <>
                 {dataMapFromAPI[
                   `${currentPopupData?.x},${currentPopupData?.y}`
@@ -112,6 +121,7 @@ export default function EditMapO({}: Props) {
                   ]}
                   onChange={(data) => {
                     setDragMapData(data);
+                    setEnabledDrag(false);
                   }}
                   onHover={(x, y) => {
                     atlasCreate.handleHover(x, y);
@@ -121,6 +131,7 @@ export default function EditMapO({}: Props) {
                   onPopup={(arg) => {
                     setCurrentPopupData(arg);
                   }}
+                  isDraggable={isEnabledDrag}
                 />
               </>
             )}
@@ -146,42 +157,45 @@ export default function EditMapO({}: Props) {
                     >
                       Merge
                     </Button>
-                    {/*
-                    <Button onClick={() => executeMerge()}>Create grid</Button>
-                    <Button onClick={() => executeConnectAll()}>
+                    <Button onClick={() => atlasCreate.executeCreateGrid()}>
+                      Create grid
+                    </Button>
+                    <Button onClick={() => atlasCreate.executeConnectAll()}>
                       Connect all
                     </Button>
-                    <Button onClick={() => executeConnectTop()}>
-                      Disconnect left
+                    <Button onClick={() => atlasCreate.executeConnectTop()}>
+                      Disconnect Left
                     </Button>
-                    <Button onClick={() => executeConnectLeft()}>
-                      Disconnect top
+                    <Button onClick={() => atlasCreate.executeConnectLeft()}>
+                      Disconnect Top
                     </Button>
-                    <Button onClick={() => executeConnectTopLeftOnly()}>
-                      Disconnect top left
+                    <Button
+                      onClick={() => atlasCreate.executeConnectTopLeftOnly()}
+                    >
+                      Connect Top Left
                     </Button>
-                    <Button onClick={() => executeDisconnectAll()}>
-                      Disconnect all
-                    </Button>
-                    <Button onClick={() => executeReset()}>Reset all</Button> */}
                   </Space>
                   <Divider orientation="left">Map Interaction</Divider>
                   <Space size={10} wrap>
-                    {/* <Button onClick={() => setEnabledDrag(!isEnabledDrag)}>
+                    <Button
+                      type="primary"
+                      danger={isEnabledDrag}
+                      onClick={() => setEnabledDrag(!isEnabledDrag)}
+                    >
                       {isEnabledDrag ? <>Disable Drag</> : <>Enable Drag</>}
-                    </Button> */}
+                    </Button>
                   </Space>
                   <Divider orientation="left">Visualize</Divider>
                   <Space size={10} wrap>
-                    {/* <Button
-                      onClick={() => setEnableColorGrid(!enableColorGrid)}
+                    <Button
+                      onClick={() => setEnableColorGrid(!isEnableColorGrid)}
                     >
-                      {enableColorGrid ? (
+                      {isEnableColorGrid ? (
                         <>Disable Area Color</>
                       ) : (
                         <>Enable Area Color</>
                       )}
-                    </Button> */}
+                    </Button>
                     <Button onClick={() => setEnabledTop(!isEnabledTop)}>
                       {isEnabledTop ? <>Disable Top</> : <>Enable Top</>}
                     </Button>
@@ -211,24 +225,26 @@ export default function EditMapO({}: Props) {
                 <div className="col-6">
                   <Divider orientation="left">Land Types</Divider>
                   <Space size={10} wrap>
-                    {/* <Button onClick={() => setLandType("emptyland")}>
+                    <Button
+                      onClick={() => atlasCreate.setLandType("emptyland")}
+                    >
                       Set to Empty Land
                     </Button>
-                    <Button onClick={() => setLandType("user")}>
+                    <Button onClick={() => atlasCreate.setLandType("user")}>
                       Set to User's Land
                     </Button>
-                    <Button onClick={() => setLandType("partner")}>
+                    <Button onClick={() => atlasCreate.setLandType("partner")}>
                       Set to Partner's Land
                     </Button>
-                    <Button onClick={() => setLandType("horizon")}>
+                    <Button onClick={() => atlasCreate.setLandType("horizon")}>
                       Set to Horizon's Land
                     </Button>
-                    <Button onClick={() => setLandType("sea")}>
+                    <Button onClick={() => atlasCreate.setLandType("sea")}>
                       Set to Sea's Land
-                    </Button> */}
+                    </Button>
                   </Space>
                   <Divider orientation="left">Parcel Info</Divider>
-                  {isReady && (
+                  {isReady && dataMapFromAPI && (
                     <div>
                       [{currentHover?.x}, {currentHover?.y}]
                       <div style={{ wordWrap: "break-word" }}>
