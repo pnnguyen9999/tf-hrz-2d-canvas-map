@@ -298,7 +298,7 @@ export class Atlas {
   public renderColorAreaLayer: Layer = (x, y) => {
     if (this.isEnableColorGrid) {
       return {
-        scale: 1.1,
+        scale: 1.2,
         color:
           y > 0 && x < 0
             ? "#FF56CC"
@@ -553,6 +553,7 @@ export class Atlas {
     };
     async function asyncGetRightLand() {
       let dataArray: any = Object.entries(dataProcess);
+      console.log(dataArray);
       let xMin = Math.min(
         dataArray[0][1].x,
         dataArray[dataArray.length - 1][1].x
@@ -561,14 +562,13 @@ export class Atlas {
         dataArray[0][1].x,
         dataArray[dataArray.length - 1][1].x
       );
-      let yMin = Math.min(
-        dataArray[0][1].y,
-        dataArray[dataArray.length - 1][1].y
-      );
-      let yMax = Math.max(
-        dataArray[0][1].y,
-        dataArray[dataArray.length - 1][1].y
-      );
+      let yArr = [];
+      for (const data of dataArray) {
+        yArr.push(data[1].y);
+      }
+      let yMin = _.min(yArr);
+      let yMax = _.max(yArr);
+      console.log({ xMin, yMin, xMax, yMax });
       await axios
         .get(
           `https://api-dev-map-viewing.horizonland.app/api/lands?start=${xMin},${yMax}&end=${xMax},${yMin}`
@@ -577,15 +577,16 @@ export class Atlas {
           that.atlasData = { ...that.atlasData, ...res.data.data };
         });
     }
+
     await axiosService
       .post(`${API_ENDPOINT}/lands`, dataSend)
-      .then((res: any) => {
+      .then(async (res: any) => {
         if (res.data.status) {
           toast.info(res.data.message);
           this.dataSave = {};
         } else {
           this.dataSave = {};
-          asyncGetRightLand();
+          await asyncGetRightLand();
           toast.error(res.data.message);
         }
       });

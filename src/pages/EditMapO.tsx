@@ -8,7 +8,6 @@ import _ from "lodash";
 import LoadingOverlay from "react-loading-overlay";
 import { useSearchParams } from "react-router-dom";
 
-type Props = {};
 type DragData = {
   center: Coord;
   nw: Coord;
@@ -16,7 +15,7 @@ type DragData = {
   zoom: number;
 };
 const limitWMap = 274;
-export default function EditMapO({}: Props) {
+export default function EditMapO() {
   //   let atlasCreate = new Atlas();
   const [atlasCreate, setAtlasCreate] = useState<Atlas>(new Atlas());
   const [isReady, setReady] = useState<boolean>(false);
@@ -27,9 +26,6 @@ export default function EditMapO({}: Props) {
   const [isFreeRectangle, setFreeRectangle] = useState<boolean>(true);
   const [isEnableColorGrid, setEnableColorGrid] = useState<boolean>(true);
   const [dragMapData, setDragMapData] = useState<DragData>();
-  const [dataMapFromAPI, setDataMapFromAPI] = useState<
-    Record<string, AtlasTile> | any
-  >();
   const [currentHover, setCurrentHover] = useState<any>();
   const [currentPopupData, setCurrentPopupData] = useState<any>();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -37,16 +33,18 @@ export default function EditMapO({}: Props) {
     centerPointX: 0,
     centerPointY: 0,
   });
+  const [dataMapSumary, setDataMapSumary] = useState<any>();
   const refMap = useRef<any>();
 
   useEffect(() => {
     async function loadMap() {
       await axios
-        // .get(
-        //   dragMapData
-        //     ? `https://api-dev-map-viewing.horizonland.app/api/lands?start=${dragMapData?.nw?.x},${dragMapData?.nw?.y}&end=${dragMapData?.se?.x},${dragMapData?.se?.y}`
-        //     : `https://api-dev-map-viewing.horizonland.app/api/lands?start=-15,15&end=15,-15`
-        // )
+        .get(`https://dev-api-admin.horizonland.app/api/lands/summary`)
+        .then((res: any) => {
+          console.log(res.data.data);
+          setDataMapSumary(res.data.data);
+        });
+      await axios
         .get(
           `https://api-dev-map-viewing.horizonland.app/api/lands?start=-${limitWMap},${limitWMap}&end=${limitWMap},-${limitWMap}`
         )
@@ -54,9 +52,7 @@ export default function EditMapO({}: Props) {
           await atlasCreate.parseInfoData(
             res.data.data as Record<string, AtlasTile>
           );
-          setDataMapFromAPI(res.data.data as Record<string, AtlasTile>);
           setReady(true);
-          //   setEnabledDrag(true);
           console.log("loaded");
         });
     }
@@ -70,9 +66,9 @@ export default function EditMapO({}: Props) {
           centerPointX: parseInt(searchParams.get("centerPointX")),
           centerPointY: parseInt(searchParams.get("centerPointY")),
         });
-      } else {
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReady]);
 
   useEffect(() => {
@@ -101,11 +97,6 @@ export default function EditMapO({}: Props) {
 
   return (
     <>
-      <LoadingOverlay
-        active={!isReady}
-        spinner
-        text="Loading map data..."
-      ></LoadingOverlay>
       <div>
         <div className="col-12">
           <div className="row">
@@ -113,9 +104,49 @@ export default function EditMapO({}: Props) {
               className="titlemap-area col-8 p-0"
               style={{ height: "100vh" }}
             >
-              {isReady && dataMapFromAPI && (
+              <div className="col-12 container mt-2">
+                <div className="row my-2">
+                  <div className="col-md-2 col-6">
+                    <div className="d-flex align-items-center">
+                      <div className="land-color" />
+                      <div className="land-info d-flex flex-column land-name">
+                        <div>Total Land</div>
+                        <div>({dataMapSumary?.totalLand})</div>
+                      </div>
+                    </div>
+                  </div>
+                  {dataMapSumary?.summary.map((obj: any) => (
+                    <div className="col-md-2 col-6">
+                      <div className="d-flex align-items-center">
+                        <div
+                          className="land-color"
+                          style={{
+                            backgroundColor: COLOR_BY_TYPE[obj.id].color,
+                          }}
+                        />
+                        <div className="land-info d-flex flex-column land-name">
+                          <div>{obj.type}</div>
+                          <div>
+                            ({obj.percent}%&nbsp;-&nbsp;{obj.land})
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {!isReady && (
+                <div className="p-5">
+                  <LoadingOverlay
+                    active={!isReady}
+                    spinner
+                    text="Loading map data..."
+                  ></LoadingOverlay>
+                </div>
+              )}
+              {isReady && atlasCreate.returnAtlasData() && (
                 <>
-                  {dataMapFromAPI[
+                  {atlasCreate.returnAtlasData()[
                     `${currentPopupData?.x},${currentPopupData?.y}`
                   ] && (
                     <div
@@ -127,7 +158,7 @@ export default function EditMapO({}: Props) {
                     >
                       _id:{" "}
                       {
-                        dataMapFromAPI[
+                        atlasCreate.returnAtlasData()[
                           `${currentPopupData?.x},${currentPopupData?.y}`
                         ]?._id
                       }
@@ -135,7 +166,7 @@ export default function EditMapO({}: Props) {
                         type:{" "}
                         {
                           COLOR_BY_TYPE[
-                            dataMapFromAPI[
+                            atlasCreate.returnAtlasData()[
                               `${currentPopupData?.x},${currentPopupData?.y}`
                             ]?.type
                           ]?.name
@@ -199,7 +230,7 @@ export default function EditMapO({}: Props) {
                         Merge
                       </Button>
                       <Button onClick={() => atlasCreate.executeCreateGrid()}>
-                        Create grid
+                        Create grid (Disconnect)
                       </Button>
                       <Button onClick={() => atlasCreate.executeConnectAll()}>
                         Connect all
@@ -256,8 +287,16 @@ export default function EditMapO({}: Props) {
                     <Divider orientation="left">Data Interaction</Divider>
                     <Button
                       type="primary"
-                      onClick={() => {
+                      onClick={async () => {
                         atlasCreate.saveTiles();
+                        await axios
+                          .get(
+                            `https://dev-api-admin.horizonland.app/api/lands/summary`
+                          )
+                          .then((res: any) => {
+                            console.log(res.data.data);
+                            setDataMapSumary(res.data.data);
+                          });
                       }}
                     >
                       Save Map
@@ -289,12 +328,12 @@ export default function EditMapO({}: Props) {
                       </Button>
                     </Space>
                     <Divider orientation="left">Parcel Info</Divider>
-                    {isReady && dataMapFromAPI && (
+                    {isReady && atlasCreate.returnAtlasData() && (
                       <div>
                         [{currentHover?.x}, {currentHover?.y}]
                         <div style={{ wordWrap: "break-word" }}>
                           {JSON.stringify(
-                            dataMapFromAPI[
+                            atlasCreate.returnAtlasData()[
                               `${currentHover?.x},${currentHover?.y}`
                             ]
                           )}
@@ -302,7 +341,7 @@ export default function EditMapO({}: Props) {
                             Land Type:&nbsp;
                             {
                               COLOR_BY_TYPE[
-                                dataMapFromAPI[
+                                atlasCreate.returnAtlasData()[
                                   `${currentHover?.x},${currentHover?.y}`
                                 ]?.type
                               ]?.name
