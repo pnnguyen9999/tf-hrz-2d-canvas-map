@@ -554,20 +554,17 @@ export class Atlas {
     async function asyncGetRightLand() {
       let dataArray: any = Object.entries(dataProcess);
       console.log(dataArray);
-      let xMin = Math.min(
-        dataArray[0][1].x,
-        dataArray[dataArray.length - 1][1].x
-      );
-      let xMax = Math.max(
-        dataArray[0][1].x,
-        dataArray[dataArray.length - 1][1].x
-      );
+
+      let xArr = [];
       let yArr = [];
       for (const data of dataArray) {
+        xArr.push(data[1].x);
         yArr.push(data[1].y);
       }
-      let yMin = _.min(yArr);
-      let yMax = _.max(yArr);
+      const xMin = _.min(xArr);
+      const xMax = _.max(xArr);
+      const yMin = _.min(yArr);
+      const yMax = _.max(yArr);
       console.log({ xMin, yMin, xMax, yMax });
       await axios
         .get(
