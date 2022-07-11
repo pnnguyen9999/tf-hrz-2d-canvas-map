@@ -45,7 +45,9 @@ export default function EditMapO() {
       });
       await axios
         .get(
-          `${API_VIEWING_ENDPOINT}/lands?start=-${limitWMap},${limitWMap}&end=${limitWMap},-${limitWMap}`
+          `${API_VIEWING_ENDPOINT}/lands?start=-${
+            limitWMap + 1
+          },${limitWMap}&end=${limitWMap},-${limitWMap + 1}`
         )
         .then(async (res: any) => {
           await atlasCreate.parseInfoData(

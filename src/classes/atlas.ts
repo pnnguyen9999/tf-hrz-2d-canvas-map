@@ -6,23 +6,23 @@ import axiosService from "services/axiosService";
 import _ from "lodash";
 
 export const COLOR_BY_TYPE = Object.freeze({
-  "62875eab7aad92b518bfec76": {
+  "62cbd8345b2984b84bdb6673": {
     color: "#3E6587",
     name: "User",
   }, // User
-  "62875eaf7aad92b518bfec88": {
+  "62cbd8395b2984b84bdb6679": {
     color: "#C4A923",
     name: "Partner",
   }, // Partner
-  "62875eeb7aad92b518bfec9e": {
+  "62cbd8425b2984b84bdb667f": {
     color: "#1A54A4",
     name: "Horizon Land",
   }, // Horizon
-  "62875efc7aad92b518bfecb8": {
+  "62cbd8465b2984b84bdb6685": {
     color: "#595B7C",
     name: "Sea",
   }, // Sea
-  "628f4b8f5d0772f1dc3c3f68": {
+  "62cbd84d5b2984b84bdb668b": {
     color: "#B3B3B3",
     name: "EmptyLand",
   }, // parcels/estates where I have permissions
@@ -341,7 +341,7 @@ export class Atlas {
       );
 
       const obj = {
-        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
+        type: this.atlasData[id].type || "62cbd84d5b2984b84bdb668b",
         x: this.selectedArea[i].x,
         y: this.selectedArea[i].y,
         top: !!checkTop,
@@ -363,7 +363,7 @@ export class Atlas {
     for (let i = 0; i < this.selectedArea.length; i++) {
       const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
       const obj = {
-        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
+        type: this.atlasData[id].type || "62cbd84d5b2984b84bdb668b",
         x: this.selectedArea[i].x,
         y: this.selectedArea[i].y,
         top: 0,
@@ -385,7 +385,7 @@ export class Atlas {
     for (let i = 0; i < this.selectedArea.length; i++) {
       const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
       const obj = {
-        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
+        type: this.atlasData[id].type || "62cbd84d5b2984b84bdb668b",
         x: this.selectedArea[i].x,
         y: this.selectedArea[i].y,
         top: 1,
@@ -407,7 +407,7 @@ export class Atlas {
     for (let i = 0; i < this.selectedArea.length; i++) {
       const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
       const obj = {
-        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
+        type: this.atlasData[id].type || "62cbd84d5b2984b84bdb668b",
         x: this.selectedArea[i].x,
         y: this.selectedArea[i].y,
         top: 1,
@@ -429,7 +429,7 @@ export class Atlas {
     for (let i = 0; i < this.selectedArea.length; i++) {
       const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
       const obj = {
-        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
+        type: this.atlasData[id].type || "62cbd84d5b2984b84bdb668b",
         x: this.selectedArea[i].x,
         y: this.selectedArea[i].y,
         top: 0,
@@ -451,7 +451,7 @@ export class Atlas {
     for (let i = 0; i < this.selectedArea.length; i++) {
       const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
       const obj = {
-        type: this.atlasData[id].type || "628f4b8f5d0772f1dc3c3f68",
+        type: this.atlasData[id].type || "62cbd84d5b2984b84bdb668b",
         x: this.selectedArea[i].x,
         y: this.selectedArea[i].y,
         top: 1,
@@ -476,11 +476,11 @@ export class Atlas {
           const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
           this.atlasData[id] = {
             ...this.atlasData[id],
-            type: "62875eab7aad92b518bfec76",
+            type: "62cbd8345b2984b84bdb6673",
           };
           this.dataSave[id] = {
             ...this.atlasData[id],
-            type: "62875eab7aad92b518bfec76",
+            type: "62cbd8345b2984b84bdb6673",
           };
         }
         break;
@@ -490,11 +490,11 @@ export class Atlas {
           const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
           this.atlasData[id] = {
             ...this.atlasData[id],
-            type: "62875eaf7aad92b518bfec88",
+            type: "62cbd8395b2984b84bdb6679",
           };
           this.dataSave[id] = {
             ...this.atlasData[id],
-            type: "62875eaf7aad92b518bfec88",
+            type: "62cbd8395b2984b84bdb6679",
           };
         }
         break;
@@ -504,11 +504,11 @@ export class Atlas {
           const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
           this.atlasData[id] = {
             ...this.atlasData[id],
-            type: "62875eeb7aad92b518bfec9e",
+            type: "62cbd8425b2984b84bdb667f",
           };
           this.dataSave[id] = {
             ...this.atlasData[id],
-            type: "62875eeb7aad92b518bfec9e",
+            type: "62cbd8425b2984b84bdb667f",
           };
         }
         break;
@@ -518,11 +518,11 @@ export class Atlas {
           const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
           this.atlasData[id] = {
             ...this.atlasData[id],
-            type: "62875efc7aad92b518bfecb8",
+            type: "62cbd8465b2984b84bdb6685",
           };
           this.dataSave[id] = {
             ...this.atlasData[id],
-            type: "62875efc7aad92b518bfecb8",
+            type: "62cbd8465b2984b84bdb6685",
           };
         }
         break;
@@ -533,11 +533,11 @@ export class Atlas {
           const id = this.selectedArea[i].x + "," + this.selectedArea[i].y;
           this.atlasData[id] = {
             ...this.atlasData[id],
-            type: "628f4b8f5d0772f1dc3c3f68",
+            type: "62cbd84d5b2984b84bdb668b",
           };
           this.dataSave[id] = {
             ...this.atlasData[id],
-            type: "628f4b8f5d0772f1dc3c3f68",
+            type: "62cbd84d5b2984b84bdb668b",
           };
         }
         break;
