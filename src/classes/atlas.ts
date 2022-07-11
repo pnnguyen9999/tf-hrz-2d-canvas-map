@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Layer } from "components";
-import { API_ENDPOINT } from "constant/api";
+import { API_ENDPOINT, API_VIEWING_ENDPOINT } from "constant/api";
 import { toast } from "react-toastify";
 import axiosService from "services/axiosService";
 import _ from "lodash";
@@ -553,8 +553,6 @@ export class Atlas {
     };
     async function asyncGetRightLand() {
       let dataArray: any = Object.entries(dataProcess);
-      console.log(dataArray);
-
       let xArr = [];
       let yArr = [];
       for (const data of dataArray) {
@@ -568,7 +566,7 @@ export class Atlas {
       console.log({ xMin, yMin, xMax, yMax });
       await axios
         .get(
-          `https://api-dev-map-viewing.horizonland.app/api/lands?start=${xMin},${yMax}&end=${xMax},${yMin}`
+          `${API_VIEWING_ENDPOINT}/lands?start=${xMin},${yMax}&end=${xMax},${yMin}`
         )
         .then(async (res: any) => {
           that.atlasData = { ...that.atlasData, ...res.data.data };

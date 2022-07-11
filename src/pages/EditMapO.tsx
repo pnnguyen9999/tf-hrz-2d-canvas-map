@@ -7,6 +7,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import _ from "lodash";
 import LoadingOverlay from "react-loading-overlay";
 import { useSearchParams } from "react-router-dom";
+import { API_ENDPOINT, API_VIEWING_ENDPOINT } from "constant/api";
 
 type DragData = {
   center: Coord;
@@ -38,15 +39,13 @@ export default function EditMapO() {
 
   useEffect(() => {
     async function loadMap() {
-      await axios
-        .get(`https://dev-api-admin.horizonland.app/api/lands/summary`)
-        .then((res: any) => {
-          console.log(res.data.data);
-          setDataMapSumary(res.data.data);
-        });
+      await axios.get(`${API_ENDPOINT}/lands/summary`).then((res: any) => {
+        console.log(res.data.data);
+        setDataMapSumary(res.data.data);
+      });
       await axios
         .get(
-          `https://api-dev-map-viewing.horizonland.app/api/lands?start=-${limitWMap},${limitWMap}&end=${limitWMap},-${limitWMap}`
+          `${API_VIEWING_ENDPOINT}/lands?start=-${limitWMap},${limitWMap}&end=${limitWMap},-${limitWMap}`
         )
         .then(async (res: any) => {
           await atlasCreate.parseInfoData(
