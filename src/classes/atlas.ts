@@ -7,15 +7,15 @@ import _ from "lodash";
 
 export const COLOR_BY_TYPE = Object.freeze({
   "62cbd8345b2984b84bdb6673": {
-    color: "#3E6587",
+    color: "#41A9ED",
     name: "User",
   }, // User
   "62cbd8395b2984b84bdb6679": {
-    color: "#C4A923",
+    color: "#33398F",
     name: "Partner",
   }, // Partner
   "62cbd8425b2984b84bdb667f": {
-    color: "#1A54A4",
+    color: "#E89633",
     name: "Horizon Land",
   }, // Horizon
   "62cbd8465b2984b84bdb6685": {

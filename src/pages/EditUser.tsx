@@ -16,7 +16,7 @@ import {
 import { API_ENDPOINT } from "constant/api";
 import axiosService from "services/axiosService";
 import { toast } from "react-toastify";
-import { COLOR_BY_TYPE } from "./EditMap";
+import { COLOR_BY_TYPE } from "classes/atlas";
 
 type Props = {};
 
