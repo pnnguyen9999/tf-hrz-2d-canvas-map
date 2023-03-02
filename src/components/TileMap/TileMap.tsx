@@ -19,13 +19,11 @@ export class TileMap extends React.PureComponent<Props, State> {
     initialX: 0,
     initialY: 0,
     size: 1,
-    //map width & height, khong lien quan den dien tich dat
     width: 10,
     height: 10,
     zoom: 20,
     minSize: 7,
     maxSize: 20,
-    // limit offset interacting
     minX: -275,
     maxX: 275,
     minY: -275,
@@ -214,6 +212,11 @@ export class TileMap extends React.PureComponent<Props, State> {
       nw: { x: minX - halfWidth, y: maxY + halfHeight },
       se: { x: maxX + halfWidth, y: minY - halfHeight },
     };
+
+    // const boundaries = {
+    //   nw: { x: minX, y: maxY },
+    //   se: { x: maxX, y: minY },
+    // };
 
     const viewport = {
       nw: {

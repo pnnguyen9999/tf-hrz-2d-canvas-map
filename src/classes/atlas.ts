@@ -26,16 +26,6 @@ export const COLOR_BY_TYPE = Object.freeze({
     color: "#B3B3B3",
     name: "EmptyLand",
   }, // parcels/estates where I have permissions
-  5: "#5054D4", // districts
-  6: "#563db8", // contributions
-  7: "#716C7A", // roads
-  8: "#70AC76", // plazas
-  9: "#3D3A46", // owned parcel/estate
-  10: "#3D3A46", // parcels on sale (we show them as owned parcels)
-  11: "#09080A", // unowned pacel/estate
-  12: "#CCCCCC", // background
-  13: "#E3E3E3", // loading odd
-  14: "#0d0b0e", // loading even
 });
 
 export type AtlasTile = {

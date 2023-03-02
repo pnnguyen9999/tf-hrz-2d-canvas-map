@@ -15,9 +15,8 @@ type DragData = {
   se: Coord;
   zoom: number;
 };
-const limitWMap = 274;
+const limitWMap = 50;
 export default function EditMapO() {
-  //   let atlasCreate = new Atlas();
   const [atlasCreate, setAtlasCreate] = useState<Atlas>(new Atlas());
   const [isReady, setReady] = useState<boolean>(false);
   const [isEnabledDrag, setEnabledDrag] = useState<boolean>(true);
@@ -203,6 +202,10 @@ export default function EditMapO() {
                     isDraggable={isEnabledDrag}
                     x={initCenter.centerPointX}
                     y={initCenter.centerPointY}
+                    minX={-limitWMap}
+                    maxX={limitWMap}
+                    minY={-limitWMap}
+                    maxY={limitWMap}
                   />
                 </>
               )}
